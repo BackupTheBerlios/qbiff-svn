@@ -6,4 +6,4 @@ title=`basename $1`
 #ssh -l ms wotan.suse.de touch /tmp/isny_$title
 xterm -bg black -fg white -geom 80x55 +sb \
 	-fn "-misc-console-medium-r-normal--16-160-72-72-c-80-iso10646-1" \
-	-T $title -e ssh -C -l ms 10.10.0.1
+	-T $title -e ssh -t -C -l ms 10.10.0.1 LANG=$LANG mutt -f $1
