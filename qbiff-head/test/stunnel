@@ -1,0 +1,2 @@
+export PATH=$PATH:/usr/sbin
+stunnel3_wrapper -c -r wotan.suse.de:16001 -p /suse/ms/bin/qbiff/ssl.new/cert-client/client.pem
