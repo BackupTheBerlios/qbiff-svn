@@ -39,7 +39,7 @@ class ClientInfo : public QWidget {
 	public:
 	ClientInfo (
 		QString&,QWidget*,int,const char* =0,
-		bool =TRUE,WFlags = Qt::WStyle_Customize | Qt::WStyle_NoBorder
+		bool =false,WFlags = Qt::WStyle_Customize | Qt::WStyle_NoBorder
 	);
 
 	public:
