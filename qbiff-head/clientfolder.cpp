@@ -96,15 +96,15 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 	btn->setDisabled (true);
 	QString text = btn->text();
 	if (mRemoteMail) {
-		QString* servercmd = new QString;
-		QTextOStream(servercmd) << "WRITE " << text;
-		mClient -> writeClient (*servercmd);
+		QString servercmd;
+		QTextOStream(&servercmd) << "WRITE " << text;
+		mClient -> writeClient (servercmd);
 	}
-	QProcess* proc = new QProcess();
-	proc -> addArgument (MY_MAILCLIENT);
-	proc -> addArgument (MY_FOLDER + text);
-	proc -> start();
-	while (proc->isRunning()) {
+	QProcess proc;
+	proc.addArgument (MY_MAILCLIENT);
+	proc.addArgument (MY_FOLDER + text);
+	proc.start();
+	while (proc.isRunning()) {
 		qApp->processEvents();
 		usleep (1000);
 	}
