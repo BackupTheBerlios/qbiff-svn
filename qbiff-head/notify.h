@@ -72,14 +72,16 @@ class Notify : public QObject {
 	public:
 	QList<NotifyCount> getInitialFolderList (void);
 	bool sendSignal ( int,int );
-	void sendPoll ( void );
-	void init ( void );
+	void init ( bool = false );
 
 	private:
 	int getFiles ( const QString& );
+	void activateFolderNotification ( const QString&,const QString& );
+	void cleanActiveFolderNotification ( void );
 
 	private:
 	QList<NotifyCount> mInitialFolderList;
+	QList<int> mFDs;
 	Parser* mParse;
 
 	public:
@@ -90,7 +92,6 @@ class Notify : public QObject {
 	void sigNotify ( QString*,QPoint* );
 	void sigCreate ( QString*,QPoint* );
 	void sigDelete ( QString*,QPoint* );
-	void sigPoll   ( void  );
 };
 
 #endif

@@ -19,7 +19,8 @@ STATUS        : Status: Beta
 // Constructor
 //--------------------------------------------
 ClientInfo::ClientInfo (
-	QString &folder, QWidget* parent, const char* name, bool modal, WFlags f
+	QString &folder, QWidget* parent, int newcount,
+	const char* name, bool modal, WFlags f
 ) : QWidget ( 
 	parent,name,
 	(modal ? (f|WType_Modal) : f) | WType_TopLevel | WStyle_Dialog 
@@ -40,7 +41,7 @@ ClientInfo::ClientInfo (
 		mTimer , SIGNAL (timeout   (void)),
 		this   , SLOT   (timerDone (void))
 	);
-	mNewMailCount = 0;
+	mNewMailCount = newcount;
 	adjustSize();
 }
 

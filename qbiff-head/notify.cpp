@@ -15,12 +15,19 @@ STATUS        : Status: Beta
 **************/
 #include "notify.h"
 #include "config.h"
+#include "serverhandler.h"
 
 //====================================
 // Globals
 //------------------------------------
-void* self = NULL;
+sigset_t block_set;
 int FD[3] = {-1,-1,-1};
+void* self = NULL;
+
+//====================================
+// External Globals
+//------------------------------------
+extern ServerHandler* pServer;
 
 //====================================
 // Constructor
@@ -48,19 +55,12 @@ QPoint* NotifyCount::getCount (void) {
 // Constructor
 //------------------------------------
 Notify::Notify ( Parser* parse ) {
-	mParse = parse;
-	init ();
-}
-
-void Notify::init ( void ) {
-	QList<char> mFolderNames = mParse -> folderList();
-	QList<char> subdir;
-	subdir.append ("/new");
-	subdir.append ("/cur");
+	mParse = parse; init();
+	struct sigaction pending;
+	pending.sa_sigaction = handlePendingEvent; 
+	sigaction (SIGIO , &pending , 0);
 
 	struct sigaction action;
-	struct sigaction pending;
-
 	action.sa_sigaction = handleNotifyCreateEvent;
 	sigemptyset (&action.sa_mask);
 	action.sa_flags = SA_SIGINFO;
@@ -71,28 +71,34 @@ void Notify::init ( void ) {
 	action.sa_flags = SA_SIGINFO;
 	sigaction (SIGRTMIN + 1 , &action , 0);
 
-	pending.sa_sigaction = handlePendingEvent;
-	sigaction (SIGIO , &pending , 0);
-
-	sigset_t block_set;
 	sigemptyset (&block_set);
-	for (int i=0;i<2;i++) { 
+	sigaddset (&block_set,SIGIO);
+	for (int i=0;i<2;i++) {
 		sigaddset (&block_set,SIGRTMIN + i);
 	}
+	self = this;
+}
 
-	mInitialFolderList.clear();
-	mNotifyDirs.clear();
-	mNotifyCount.clear();
+//====================================
+// init
+//------------------------------------
+void Notify::init ( bool clean ) {
 	sigprocmask(SIG_BLOCK, &block_set,0);
+	QList<char> mFolderNames = mParse -> folderList();
+	if (clean) {
+		printf ("________cleaning: pollable event occured\n");
+		cleanActiveFolderNotification();
+	}
+	QList<char> subdir;
+	subdir.append ("/new");
+	subdir.append ("/cur");
 	QListIterator<char> it ( mFolderNames );
+	int FDcount = 0;
 	for (; it.current(); ++it) {
 		QPoint* dirCount = 0;
-		int FDs[4];
-		int FDcount = 0;
 		for (int i=0;i<2;i++) {
 			if (i == 0) {
 				dirCount = new QPoint;
-				FDcount  = 0;
 			}
 			int count = getFiles (
 				MY_FOLDER+QString(it.current())+QString(subdir.at(i))+"/*"
@@ -103,51 +109,83 @@ void Notify::init ( void ) {
 			if (i == 1) {
 				dirCount->setY (count);
 			}
-			for (int n=0;n<2;n++) {
-				FD[n] = open (
-					MY_FOLDER+QString(it.current())+ QString(subdir.at(i)),
-					O_RDONLY
-				);
-				if (FD[n] == -1) {
-					continue;
-				}
-				FDs[FDcount] = FD[n];
-				fcntl (FD[n], F_SETSIG, SIGRTMIN + n);
-				long flags = 0;
-				switch (n) {
-					case 0:
-						flags = DN_MULTISHOT | DN_CREATE;
-					break;
-					case 1:
-						flags = DN_MULTISHOT | DN_DELETE;
-					break;
-					default:
-					break;
-				}
-				if (fcntl (FD[n],F_NOTIFY, flags) == -1) {
-					continue;
-				}
-				QString* folder = new QString (
-					it.current()+QString(subdir.at(i))
-				);
-				mNotifyDirs.insert (
-					FD[n], folder
-				);
-				FDcount++;
-			}
+			activateFolderNotification (
+				it.current(),subdir.at(i)
+			);
 			if (i == 1) {
-				for (int n=0;n<4;n++) {
-					mNotifyCount.insert ( FDs[n], dirCount );
+				int start = FDcount;
+				int ended = FDcount + 4;
+				for (int n=start;n<ended;n++) {
+					int fd = *mFDs.at(n);
+					mNotifyCount.insert ( fd, dirCount );
 				}
+				FDcount = ended;
 				NotifyCount* initial = new NotifyCount (
 					it.current(),*dirCount
 				);
 				mInitialFolderList.append (initial);
 			}
+
 		}
 	}
 	sigprocmask(SIG_UNBLOCK, &block_set,0);
-	self = this;
+}
+
+//=========================================
+// activateFolderNotification
+//-----------------------------------------
+void Notify::activateFolderNotification (
+	const QString& folderName, const QString& subDir
+) {
+	for (int n=0;n<2;n++) {
+		int fd = open (
+			MY_FOLDER+folderName+subDir,
+			O_RDONLY
+		);
+		if (fd == -1) {
+			return;
+		}
+		fcntl (fd, F_SETSIG, SIGRTMIN + n);
+		long flags = 0;
+		switch (n) {
+			case 0:
+				flags = DN_MULTISHOT | DN_CREATE;
+			break;
+			case 1:
+				flags = DN_MULTISHOT | DN_DELETE;
+			break;
+			default:
+			break;
+		}
+		if (fcntl (fd,F_NOTIFY, flags) == -1) {
+			return;
+		}
+		QString* folder = new QString (
+			folderName+subDir
+		);
+		mNotifyDirs.insert (
+			fd, folder
+		);
+		int* saveFD = (int*)malloc (sizeof (int));
+		*saveFD = fd;
+		mFDs.append (saveFD);
+	}
+}
+
+//=========================================
+// 
+//-----------------------------------------
+void Notify::cleanActiveFolderNotification (void) {
+	QListIterator<int> fd ( mFDs );
+	for (; fd.current(); ++fd) {
+		fcntl (*fd.current(), F_NOTIFY, 0);
+		fcntl (*fd.current(), F_SETSIG, 0);
+		close (*fd.current());
+	}
+	mInitialFolderList.clear();
+	mNotifyDirs.clear();
+	mNotifyCount.clear();
+	mFDs.clear();
 }
 
 //=========================================
@@ -172,6 +210,7 @@ int Notify::getFiles (const QString& pattern) {
 // Member call for handleNotificationEvent
 //-----------------------------------------
 bool Notify::sendSignal (int fd,int flag) {
+	sigprocmask(SIG_BLOCK, &block_set,0);
 	if ( mNotifyDirs[fd] ) {
 		QString* pFolder = mNotifyDirs[fd];
 		QPoint*  count   = mNotifyCount[fd];
@@ -201,16 +240,11 @@ bool Notify::sendSignal (int fd,int flag) {
 			break;
 		}
 		sigNotify ( &folder,count );
+		sigprocmask(SIG_UNBLOCK, &block_set,0);
 		return true;
 	}
+	sigprocmask(SIG_UNBLOCK, &block_set,0);
 	return false;
-}
-
-//=========================================
-// Member call for handlePendingEvent
-//-----------------------------------------
-void Notify::sendPoll (void) {
-	sigPoll ();
 }
 
 //=========================================
@@ -225,7 +259,7 @@ QList<NotifyCount> Notify::getInitialFolderList (void) {
 //-----------------------------------------
 void handleNotifyCreateEvent ( int, siginfo_t* si , void* ) {
 	Notify* obj = (Notify*)self;
-	obj->sendSignal (si->si_fd,QBIFF_CREATE);
+	obj -> sendSignal (si->si_fd,QBIFF_CREATE);
 }
 
 //=========================================
@@ -233,7 +267,7 @@ void handleNotifyCreateEvent ( int, siginfo_t* si , void* ) {
 //-----------------------------------------
 void handleNotifyDeleteEvent ( int, siginfo_t* si , void* ) {
 	Notify* obj = (Notify*)self;
-	obj->sendSignal (si->si_fd,QBIFF_DELETE);
+	obj -> sendSignal (si->si_fd,QBIFF_DELETE);
 }
 
 //=========================================
@@ -244,6 +278,7 @@ void handlePendingEvent ( int, siginfo_t* , void* ) {
 	// RT signal queue is full, the result is a SIGIO and we
 	// need to check all notify-directories
 	// ...
-	Notify* obj = (Notify*)self;
-	obj -> sendPoll ();
+	if (pServer) {
+		pServer -> poll();
+	}
 }

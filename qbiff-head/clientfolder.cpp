@@ -51,7 +51,7 @@ void ClientFolder::gotLine ( QString line ) {
 	}
 	if (! mButton[folder]) {
 		Button* btn = new Button (folder,this);
-		ClientInfo* info = new ClientInfo (folder,btn);
+		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
 		btn->setPaletteBackgroundColor ( QColor(0,0,128) );
 		btn->setPaletteForegroundColor ( QColor(255,255,255));
 		btn->setTip (newmail,curmail);

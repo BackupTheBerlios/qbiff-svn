@@ -85,10 +85,6 @@ ServerHandler::ServerHandler ( QObject * p ) : QObject (p) {
 		this    , SLOT   ( slotNotify (QString*,QPoint*) )
 	);
 	connect (
-		mNotify , SIGNAL ( sigPoll  (void) ),
-		this    , SLOT   ( slotPoll (void) )
-	);
-	connect (
 		mServer , SIGNAL ( clientInit (void) ),
 		this    , SLOT   ( clientInit (void) )
 	);
@@ -131,14 +127,14 @@ void ServerHandler::clientInit (void) {
 }
 
 //=========================================
-// slotPoll
+// poll
 //-----------------------------------------
-void ServerHandler::slotPoll (void) {
+void ServerHandler::poll (void) {
 	// ... /
 	// RT signal queue is full, the result is a SIGIO and we
 	// need to check all notify-directories
 	// ...
-	mNotify -> init();
+	mNotify -> init (true);
 	mFolderList.clear();
 	QList<NotifyCount> initialFolders = mNotify->getInitialFolderList();
 	QListIterator<NotifyCount> io (initialFolders);
@@ -147,6 +143,7 @@ void ServerHandler::slotPoll (void) {
 		ServerFolder* folder = new ServerFolder (
 			data->getFolder(),data->getCount(),mServer
 		);
+		folder -> updateFolder();
 		mFolderList.append (folder);
 	}
 }

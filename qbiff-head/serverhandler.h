@@ -69,11 +69,11 @@ class ServerHandler : public QObject {
 
 	private slots:
 	void slotNotify (QString*,QPoint*);
-	void slotPoll   (void);
 	void clientInit (void);
 
 	public:
 	void cleanup (void);
+	void poll (void);
 };
 
 #endif
