@@ -40,12 +40,16 @@ QString Button::tipText (const QString& newmail,const QString& curmail) {
 	allmail.sprintf ("%d",allcount);
 	QString text;
 	QTextOStream (&text)
-		<< "<table border=0 cellspacing=0><tr>"
-		<< "<td><img src=\"" << PIXINFO << "\"></td>"
-		<< "<td><nobr>Folder: <b>" << mFolder << " : "
-		<< newmail << "</b> new Mail(s)</nobr><br><hr>"
-		<< "Counting <b>" << allmail << "</b> mails</td>"
-		<< "</tr></table>";
+		<< "<table border=0 cellspacing=0>"
+		<< "<tr>"
+		<< "<th rowspan=2><img src=\"" << PIXINFO << "\"></th>"
+		<< "<td><nobr>Folder: <b>" << mFolder 
+		<< " : " << newmail << "</b> new Mail(s)</nobr></td>"
+		<< "</tr>"
+		<< "<tr>"
+		<< "<td><hr>Counting <b>" << allmail << "</b> mails</td>"
+		<< "</tr>"
+		<< "</table>";
 	return text;
 }
 
