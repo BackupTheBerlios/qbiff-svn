@@ -29,6 +29,9 @@ ClientInfo::ClientInfo (
 	mLabel -> setFrameStyle (
 		QFrame::Box|QFrame::Plain
 	);
+	mLabel -> setPaletteBackgroundColor(
+		QColor( 250,250,210 )
+	);
 	mLabel -> setLineWidth ( 1 );
 	layer1 -> addWidget ( mLabel );
 	mFolder = folder;

@@ -5,4 +5,4 @@ xset fp+ /opt/kde3/share/fonts/
 xset fp rehash
 
 ASK=/usr/lib/ssh/x11-ssh-askpass
-cd /suse/ms/bin/qbiff/ssl && $ASK | ./qbiff -geometry +0-1
+cd /suse/ms/bin/qbiff/ssl && $ASK | ./qbiff -geometry +0-1 $@
