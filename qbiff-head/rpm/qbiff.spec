@@ -79,6 +79,10 @@ install -m 644 cert-client/client.pem \
 #-------------------------------------------------
 %files
 %defattr(-,root,root)
+%dir /usr/share/qbiff
+%dir /usr/share/qbiff/pixmaps
+%dir /usr/share/qbiff/cert-server
+%dir /usr/share/qbiff/cert-client
 /usr/sbin/qbiff
 /usr/sbin/qbiff-client
 /usr/share/qbiff/readmail
