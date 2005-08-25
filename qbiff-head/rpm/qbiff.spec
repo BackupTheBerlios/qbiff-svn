@@ -50,23 +50,28 @@ test -e /.buildenv && . /.buildenv
 #-------------------------------------------------
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p /usr/sbin
-mkdir -p /usr/share/qbiff
-mkdir -p /usr/share/qbiff/cert-server
-mkdir -p /usr/share/qbiff/cert-client
-mkdir -p /usr/share/qbiff/pixmaps
+mkdir -p $RPM_BUILD_ROOT/usr/sbin
+mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff
+mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/cert-server
+mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/cert-client
+mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 
-install -m 755 qbiff /usr/sbin
-install -m 755 qbiff-client /usr/sbin
-install -m 755 readmail.local /usr/share/qbiff/readmail
-install -m 644 pixmaps/tooltip.xpm /usr/share/qbiff/pixmaps
+install -m 755 qbiff               $RPM_BUILD_ROOT/usr/sbin
+install -m 755 qbiff-client        $RPM_BUILD_ROOT/usr/sbin
+install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail
+install -m 644 pixmaps/tooltip.xpm $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 
-install -m 644 cert-server/rootcert.pem /usr/share/qbiff/cert-server
-install -m 644 cert-server/dh1024.pem /usr/share/qbiff/cert-server
-install -m 644 cert-server/dh512.pem /usr/share/qbiff/cert-server
-install -m 644 cert-server/server.pem /usr/share/qbiff/cert-server
+install -m 644 cert-server/rootcert.pem \
+	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
+install -m 644 cert-server/dh1024.pem \
+	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
+install -m 644 cert-server/dh512.pem \
+	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
+install -m 644 cert-server/server.pem \
+	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
 
-install -m 644 cert-client/client.pem /usr/share/qbiff/cert-client
+install -m 644 cert-client/client.pem \
+	$RPM_BUILD_ROOT/usr/share/qbiff/cert-client
 
 
 #=================================================
