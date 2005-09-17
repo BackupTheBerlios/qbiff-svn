@@ -17,8 +17,8 @@ certcleanunused:
 	$(RM) -f clientkey.pem clientreq.pem clientcert.pem
 
 certclean:
-	$(RM) -f clientkey.pem clientreq.pem clientcert.pem client.pem
+	$(RM) -f clientkey.pem clientreq.pem clientcert.pem client.pem root.srl
 
 clean: certcleanunused
 
-distclean: clean certclean dhparamclean
+distclean: clean certclean
