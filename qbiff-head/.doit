@@ -112,9 +112,9 @@ sub svnup {
 	#===========================================
 	# set SVN path to repository and branch/tag
 	#-------------------------------------------
-	my $svnPath = "svn.suse.de:/svn/qbiff/qbiff-head";
+	my $svnPath = "svn.berlios.de/svnroot/repos/qbiff/qbiff-head";
 	if (defined $tagName) {
-		$svnPath = "svn.suse.de:/svn/qbiff/".$treeID."/".$tagName;
+		$svnPath = "svn.berlios.de/svnroot/repos/qbiff/".$treeID."/".$tagName;
 	}
 	#===========================================
 	# create tmp directory and change into it
