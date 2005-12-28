@@ -20,14 +20,22 @@ STATUS        : Status: Beta
 //-----------------------------------------
 SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 	BIO *sbio;
+	printf ("Initialize openssl\n");
 	init_OpenSSL ();
 	seed_prng ();
+	printf ("Setup client context\n");
 	setupClientCTX ();
+	printf ("Connecting TCP socket\n");
 	connectTCP ();
 
+	printf ("Creating new SSL object\n");
 	ssl = SSL_new (ctx);
+	printf ("Creating new SSL BIO socket\n");
 	sbio= BIO_new_socket (mSocket,BIO_NOCLOSE);
+	printf ("Setup SSL BIO socket\n");
 	SSL_set_bio (ssl,sbio,sbio);
+	sleep (1);
+	printf ("Connecting SSL socket\n");
 	if (SSL_connect(ssl) <=0) {
 		qerror ("Error creating connection BIO");
 	}
@@ -45,6 +53,7 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 	mDataToWrite = false;
 	FD_ZERO (&readFDs);
 	FD_ZERO (&writeFDs);
+	printf ("SSL Connection created\n");
 }
 
 //=========================================
