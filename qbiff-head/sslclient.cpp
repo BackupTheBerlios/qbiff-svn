@@ -34,6 +34,9 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 	sbio= BIO_new_socket (mSocket,BIO_NOCLOSE);
 	printf ("Setup SSL BIO socket\n");
 	SSL_set_bio (ssl,sbio,sbio);
+	printf ("Setup SSL and TCP socket\n");
+	SSL_set_fd (ssl,mSocket);
+	printf ("Sleeping 1 sec\n");
 	sleep (1);
 	printf ("Connecting SSL socket\n");
 	if (SSL_connect(ssl) <=0) {
