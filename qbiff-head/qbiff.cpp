@@ -32,6 +32,8 @@ STATUS        : Status: Beta
 bool useGUI;
 ClientFolder*  pFolder = NULL;
 ServerHandler* pServer = NULL;
+int  serverPort        = PORT;
+QString serverName     = SERVER;
 
 //=========================================
 // Global functions
@@ -66,7 +68,7 @@ int main(int argc,char*argv[]) {
 	//=========================================
 	// init variables...
 	//-----------------------------------------
-	bool remoteMail = false;
+	bool remoteMail     = false;
 
 	//=========================================
 	// get options
@@ -76,11 +78,13 @@ int main(int argc,char*argv[]) {
 	static struct option long_options[] =
 	{
 		{"remote"  , 0 , 0 , 'r'},
+		{"server"  , 1 , 0 , 's'},
+		{"port"    , 1 , 0 , 'p'},
 		{"help"    , 0 , 0 , 'h'},
 		{0         , 0 , 0 , 0  }
 	};
 	int c = getopt_long (
-		argc, argv, "rh",long_options, &option_index
+		argc, argv, "rhs:p:",long_options, &option_index
 	);
 	if (c == -1)
 	break;
@@ -98,6 +102,14 @@ int main(int argc,char*argv[]) {
 		remoteMail = true;
 	break;
 
+	case 's':
+		serverName = *(new QString (optarg));
+	break;
+
+	case 'p':
+		serverPort = (new QString (optarg))->toInt();
+	break;
+
 	case 'h':
 		usage();
 	break;
@@ -111,7 +123,7 @@ int main(int argc,char*argv[]) {
 	//-----------------------------------------
 	if ( ! useGUI ) {
 		QString pidfile;
-		pidfile.sprintf ("/var/tmp/qbiff.%d.pid",PORT);
+		pidfile.sprintf ("/var/tmp/qbiff.%d.pid",serverPort);
 		QFile run (pidfile);
 		if (run.exists()) {
 		if (run.open( IO_ReadOnly )) {
@@ -161,6 +173,10 @@ void usage (void) {
 	printf ("   flag files can be used to start a terminal based program\n");
 	printf ("   on the remote side whereas the controling terminal\n");
 	printf ("   remains local\n");
+	printf ("[ -s | --server ]\n");
+	printf ("   in client mode: specify server to connect.\n");
+	printf ("[ -p | --port ]\n");
+	printf ("   in client mode: specify server port to connect.\n");
 	printf ("--\n");
 	exit (1);
 }
@@ -179,7 +195,7 @@ void quit (int code,siginfo_t*,void*) {
 	}
 	if ( ! useGUI ) {
 		QString runfile;
-		runfile.sprintf ("/var/tmp/qbiff.%d.pid",PORT);
+		runfile.sprintf ("/var/tmp/qbiff.%d.pid",serverPort);
 		QFile run (runfile);
 		run.remove();
 	}

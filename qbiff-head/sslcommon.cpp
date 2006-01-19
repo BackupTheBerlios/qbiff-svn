@@ -48,7 +48,8 @@ int verify_callback (int ok, X509_STORE_CTX *store) {
 //-----------------------------------------
 int passwd_cb (char* buf,int size,int,void*) {
 	char password[80];
-	fgets (password, sizeof(password), stdin);
+	char* p = 0;
+	p = fgets (password, sizeof(password), stdin);
 	password[strlen(password)-1]='\0';
 	strncpy(buf, (char *)(password), size);
 	buf[size - 1] = '\0';
@@ -158,11 +159,13 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 			#if (OPENSSL_VERSION_NUMBER > 0x00907000L)
 			if (meth->it) {
 				ext_str = ASN1_item_d2i (
-					NULL, &data, ext->value->length,
+					NULL, (const unsigned char**)&data, ext->value->length,
 					ASN1_ITEM_ptr(meth->it)
 				);
 			} else {
-				ext_str = meth->d2i(NULL, &data, ext->value->length);
+				ext_str = meth->d2i(
+					NULL,(const unsigned char**)&data, ext->value->length
+				);
 			}
 			#else
 			ext_str = meth->d2i(NULL, &data, ext->value->length);

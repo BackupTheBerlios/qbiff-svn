@@ -16,6 +16,11 @@ STATUS        : Status: Beta
 #include "sslclient.h"
 
 //=========================================
+// Globals
+//-----------------------------------------
+extern QString serverName;
+
+//=========================================
 // Constructor
 //-----------------------------------------
 SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
@@ -36,19 +41,21 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 	SSL_set_bio (ssl,sbio,sbio);
 	printf ("Setup SSL and TCP socket\n");
 	SSL_set_fd (ssl,mSocket);
-	printf ("Sleeping 5 sec\n");
-	sleep (5);
+	//printf ("Sleeping 5 sec\n");
+	//sleep (5);
 	printf ("Connecting SSL socket\n");
 	if (SSL_connect(ssl) <=0) {
 		qerror ("Error creating connection BIO");
 	}
-	int err = postConCheck (ssl, SERVER);
+	#if 0
+	int err = postConCheck (ssl, serverName);
 	if (err != X509_V_OK) {
 		fprintf (stderr, "-Error: peer certificate: %s\n",
 			X509_verify_cert_error_string(err)
 		);
 		qerror ("Error checking SSL object after connection");
 	}
+	#endif
 	int ofcmode = fcntl (mSocket,F_GETFL,0);
 	if (fcntl (mSocket,F_SETFL,ofcmode | O_NDELAY)) {
 		qerror ("Couldn't make socket nonblocking");
@@ -142,7 +149,7 @@ void SSLClient::connectTCP (void) {
 	struct hostent *hp;
 	struct sockaddr_in addr;
 
-	if (!(hp=gethostbyname(SERVER))) {
+	if (!(hp=gethostbyname(serverName))) {
 		qerror ("Couldn't resolve host");
 	}
 	bzero(&addr,sizeof(addr));

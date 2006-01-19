@@ -22,6 +22,9 @@ Release:      2
 Group:        System/X11/Utilities
 License:      Other License(s), see package, GPL
 Source:       qbiff.tar.bz2
+%if %{suse_version} <= 1000
+Patch:        qbiff.dif
+%endif
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 
 %description
@@ -36,7 +39,9 @@ Authors:
 #-------------------------------------------------
 %prep
 %setup -n qbiff
-# %patch
+%if %{suse_version} <= 1000
+%patch
+%endif
 
 %build
 test -e /.buildenv && . /.buildenv

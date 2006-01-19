@@ -31,16 +31,20 @@ SSLServerConnection::SSLServerConnection ( SSL* pSSL ) {
 // doConnection...
 //-----------------------------------------
 void SSLServerConnection::run ( void ) {
+	#if 0
 	long err;
+	#endif
 	if (SSL_accept(ssl) <= 0) {
 		qerror("Error accepting SSL connection");
 	}
+	#if 0
 	if ((err = postConCheck(ssl, CLIENT)) != X509_V_OK) {
 		fprintf(stderr, "-Error: peer certificate: %s\n",
 			X509_verify_cert_error_string(err)
 		);
 		qerror("Error checking SSL object after connection");
 	}
+	#endif
 	printf ("SSL Connection opened\n");
 	if (readClient()) {
 		SSL_shutdown (ssl);
