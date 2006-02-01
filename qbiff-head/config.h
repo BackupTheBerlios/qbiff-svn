@@ -3,6 +3,7 @@
 //---------------------------------------
 #define MY_FOLDER      "/suse/ms/Mail/"
 #define MY_MAILCLIENT  "/usr/share/qbiff/readmail"
+#define MY_MAILCLPRIV  "/usr/share/qbiff/readmail.private"
 
 //=======================================
 // network stuff
@@ -39,3 +40,5 @@
 // pixmaps
 //---------------------------------------
 #define PIXINFO  BASEDIR "/pixmaps/tooltip.xpm"
+#define PIXPUBL  BASEDIR "/pixmaps/public.png"
+#define PIXPRIV  BASEDIR "/pixmaps/private.png" 

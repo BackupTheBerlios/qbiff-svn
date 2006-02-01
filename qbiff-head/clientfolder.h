@@ -18,6 +18,7 @@ STATUS        : Status: Beta
 
 #include <qapplication.h>
 #include <qpushbutton.h>
+#include <qcombobox.h>
 #include <qprocess.h>
 #include <qhbox.h>
 #include <qwidget.h>
@@ -41,21 +42,27 @@ class ClientFolder : public QWidget {
 	public:
 	ClientFolder ( WFlags = 0 );
 	void setRemoteMail  (bool);
+	void setToggle      (bool);
 	void cleanup (void);
 
 	private slots:
 	void gotLine        (QString);
 	void folderEvent    (QPushButton*);
 	void timerDone      (void);
+	void gotToggled     (bool);
 
 	private:
 	QTimer*             mTimer;
 	SSLClient*          mClient;
+	QPushButton*        mPrivate;
+	QPixmap             mPublicsPixmap;
+	QPixmap             mPrivatePixmap;
 	QBoxLayout*         mButtonBar;
 	QDict<Button>       mButton;
 	QDict<ClientInfo>   mInfo;
 	QList<char>         mFolderNames;
 	bool                mRemoteMail;
+	bool                mIsPrivate;
 };
 
 #endif

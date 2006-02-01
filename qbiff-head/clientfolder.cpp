@@ -21,6 +21,19 @@ STATUS        : Status: Beta
 //-----------------------------------------
 ClientFolder::ClientFolder (WFlags wflags) : QWidget (0,0,wflags)  {
 	mButtonBar  = new QHBoxLayout ( this );
+	mPrivatePixmap = QPixmap ( PIXPRIV );
+	mPublicsPixmap = QPixmap ( PIXPUBL );
+	mPrivate = new QPushButton ( this );
+	mPrivate -> setToggleButton  ( true );
+	mPrivate -> setPixmap ( mPublicsPixmap );
+	mPrivate -> setPaletteBackgroundColor ( QColor(80,0,0) );
+	mPrivate -> setFocusPolicy (NoFocus);
+	mButtonBar -> addWidget ( mPrivate );
+	mIsPrivate = false;
+	connect (
+		mPrivate , SIGNAL (toggled    ( bool )),
+		this     , SLOT   (gotToggled ( bool ))
+	);
 	mTimer      = new QTimer ( this );
 	mClient     = new SSLClient;
 	connect (
@@ -54,6 +67,7 @@ void ClientFolder::gotLine ( QString line ) {
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
 		btn->setPaletteBackgroundColor ( QColor(0,0,128) );
 		btn->setPaletteForegroundColor ( QColor(255,255,255));
+		btn->setFocusPolicy (NoFocus);
 		btn->setTip (newmail,curmail);
 		QObject::connect (
 			btn , SIGNAL ( clickedButton (QPushButton*) ),
@@ -101,7 +115,11 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 		mClient -> writeClient (servercmd);
 	}
 	QProcess proc;
-	proc.addArgument (MY_MAILCLIENT);
+	if (mIsPrivate) {
+		proc.addArgument (MY_MAILCLPRIV);
+	} else {
+		proc.addArgument (MY_MAILCLIENT);
+	}
 	proc.addArgument (MY_FOLDER + text);
 	proc.start();
 	while (proc.isRunning()) {
@@ -121,6 +139,17 @@ void ClientFolder::setRemoteMail ( bool arg ) {
 }
 
 //=========================================
+// setToggle
+//-----------------------------------------
+void ClientFolder::setToggle ( bool toggle ) {
+	if (toggle) {
+		mPrivate -> show();
+	} else {
+		mPrivate -> hide();
+	}
+}
+
+//=========================================
 // timerDone
 //-----------------------------------------
 void ClientFolder::timerDone (void) {
@@ -134,4 +163,17 @@ void ClientFolder::timerDone (void) {
 void ClientFolder::cleanup (void) {
 	mTimer  -> stop();
 	mClient -> writeClient ("QUIT");
+}
+
+//=========================================
+// gotToggled
+//-----------------------------------------
+void ClientFolder::gotToggled (bool on) {
+	if (! on) {
+		mPrivate -> setPixmap ( mPublicsPixmap );
+		mIsPrivate = false;
+	} else {
+		mPrivate -> setPixmap ( mPrivatePixmap );
+		mIsPrivate = true;
+	}
 }

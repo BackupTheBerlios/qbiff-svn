@@ -1,4 +1,10 @@
 ---------------------------------------------------------
+Wed Feb  1 11:57:21 CET 2006 - ms@suse.de
+
+- added toggle button to be able to switch between private
+  and business mail
+
+---------------------------------------------------------
 Fri Jan 20 00:02:33 CET 2006 - ms@suse.de
 
 - fixed build for newer openssl versions

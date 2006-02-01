@@ -69,6 +69,7 @@ int main(int argc,char*argv[]) {
 	// init variables...
 	//-----------------------------------------
 	bool remoteMail     = false;
+	bool haveToggle     = false;
 
 	//=========================================
 	// get options
@@ -80,11 +81,12 @@ int main(int argc,char*argv[]) {
 		{"remote"  , 0 , 0 , 'r'},
 		{"server"  , 1 , 0 , 's'},
 		{"port"    , 1 , 0 , 'p'},
+		{"toggle"  , 0 , 0 , 't'},
 		{"help"    , 0 , 0 , 'h'},
 		{0         , 0 , 0 , 0  }
 	};
 	int c = getopt_long (
-		argc, argv, "rhs:p:",long_options, &option_index
+		argc, argv, "rhs:p:t",long_options, &option_index
 	);
 	if (c == -1)
 	break;
@@ -96,6 +98,10 @@ int main(int argc,char*argv[]) {
 			fprintf (stderr," with arg %s", optarg);
 		}
 		fprintf (stderr,"\n");
+	break;
+
+	case 't':
+		haveToggle = true;
 	break;
 
 	case 'r':
@@ -153,6 +159,7 @@ int main(int argc,char*argv[]) {
 		pFolder = new ClientFolder ( wflags );
 		pFolder -> setFixedHeight(0);
 		pFolder -> setRemoteMail (remoteMail);
+		pFolder -> setToggle (haveToggle);
 		app.setMainWidget ( pFolder );
 		pFolder-> show ();
 	}
@@ -177,6 +184,9 @@ void usage (void) {
 	printf ("   in client mode: specify server to connect.\n");
 	printf ("[ -p | --port ]\n");
 	printf ("   in client mode: specify server port to connect.\n");
+	printf ("[ -t | --toggle ]\n");
+	printf ("   show toggle button to be able to switch between\n");
+	printf ("   readmail and readmail.private to be called.\n");
 	printf ("--\n");
 	exit (1);
 }

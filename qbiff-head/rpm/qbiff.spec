@@ -65,6 +65,8 @@ install -m 755 qbiff               $RPM_BUILD_ROOT/usr/sbin
 install -m 755 qbiff-client        $RPM_BUILD_ROOT/usr/sbin
 install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail
 install -m 644 pixmaps/tooltip.xpm $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/private.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/public.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 
 install -m 644 cert-server/rootcert.pem \
 	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
