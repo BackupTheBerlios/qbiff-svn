@@ -26,6 +26,7 @@ Button::Button(
 		this,  SLOT   ( slotClicked (void) )
 	);
 	mFolder = text;
+	setFont (QFont ("Sans Serif", 10, QFont::Bold));
 	mLastNewCount = 0;
 }
 
