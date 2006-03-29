@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cp cert-server/dh* /usr/share/qbiff/cert-server
+cp cert-server/rootcert.pem /usr/share/qbiff/cert-server
+cp cert-server/server.pem /usr/share/qbiff/cert-server
+
+cp cert-client/client.pem /usr/share/qbiff/cert-client
