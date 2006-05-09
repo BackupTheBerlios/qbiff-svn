@@ -69,6 +69,7 @@ void ClientFolder::gotLine ( QString line ) {
 		btn->setPaletteForegroundColor ( QColor(255,255,255));
 		btn->setFocusPolicy (NoFocus);
 		btn->setTip (newmail,curmail);
+		btn->setFixedHeight (mPrivate->height());
 		QObject::connect (
 			btn , SIGNAL ( clickedButton (QPushButton*) ),
 			this, SLOT   ( folderEvent   (QPushButton*) )
