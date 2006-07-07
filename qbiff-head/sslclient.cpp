@@ -94,15 +94,17 @@ void SSLClient::clientReadWrite ( void ) {
 			len=r;
 		break;
 		case SSL_ERROR_WANT_READ:
-		break;
+			continue;
 		break;	
 		case SSL_ERROR_ZERO_RETURN:
+			continue;
 		break;
 		case SSL_ERROR_SYSCALL:
 			qerror ("SSL Error: Premature close");
 		break;
 		default:
-			break;
+			continue;
+		break;
 		}
 		if (buf[0] == '\n') {
 			gotLine (line);

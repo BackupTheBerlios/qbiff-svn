@@ -119,6 +119,11 @@ void SSLServerInit::initClientInit ( void ) {
 // free SSL context...
 //-----------------------------------------
 void SSLServerInit::SSLFree ( void ) {
-	SSL_CTX_free (ctx);
+	QListIterator<SSLServerConnection> io (mSSLConnections);
+	for (; io.current(); ++io) {
+		SSLServerConnection* connection = io.current();
+		connection -> shutdown ();
+	}
 	BIO_free (acc);
+	SSL_CTX_free (ctx);
 }

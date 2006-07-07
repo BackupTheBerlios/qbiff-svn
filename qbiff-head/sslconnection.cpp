@@ -28,6 +28,15 @@ SSLServerConnection::SSLServerConnection ( SSL* pSSL ) {
 }
 
 //=========================================
+// shutdown...
+//-----------------------------------------
+void SSLServerConnection::shutdown ( void ) {
+	if (ssl) {
+		SSL_shutdown (ssl);
+	}
+}
+
+//=========================================
 // doConnection...
 //-----------------------------------------
 void SSLServerConnection::run ( void ) {
@@ -124,8 +133,9 @@ int SSLServerConnection::readClient ( void ) {
 void SSLServerConnection::writeClient ( const QString & data ) {
 	int err = 0;
 	QString stream (data + "\n");
-	char buf[stream.length()];
-	memcpy (buf,stream.data(),stream.length());
+	char buf[stream.length()+1];
+	memset (&buf, '\0', sizeof(buf));
+	strncpy (buf,stream.data(),stream.length());
 	for (unsigned int nwritten = 0;nwritten < sizeof(buf);nwritten+=err) {
 		err = SSL_write(ssl,buf + nwritten, sizeof(buf) - nwritten);
 		switch (SSL_get_error(ssl,err)) {

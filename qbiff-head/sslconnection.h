@@ -40,6 +40,7 @@ class SSLServerConnection : public SSLCommon, public QThread {
 	public:
 	SSLServerConnection ( SSL* );
 	void writeClient ( const QString & );
+	void shutdown ( void );
 	virtual void run ( void );
 	
 	private:

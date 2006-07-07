@@ -22,6 +22,6 @@ HEADERS   += clientinfo.h
 HEADERS   += button.h
 HEADERS   += parser.h
 HEADERS   += notify.h
-CONFIG    += thread warn_on release
+CONFIG    += qt warn_on release
 TARGET    += qbiff
 unix:LIBS += -lssl -lcrypto -lXtst
