@@ -157,6 +157,7 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 			data = ext->value->data;
 
 			#if (OPENSSL_VERSION_NUMBER > 0x00907000L)
+			#if (OPENSSL_VERSION_NUMBER > 0x0090705FL)
 			if (meth->it) {
 				ext_str = ASN1_item_d2i (
 					NULL, (const unsigned char**)&data, ext->value->length,
@@ -164,9 +165,21 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 				);
 			} else {
 				ext_str = meth->d2i(
-					NULL,(const unsigned char**)&data, ext->value->length
+					NULL, (const unsigned char**)&data, ext->value->length
 				);
 			}
+			#else
+			if (meth->it) {
+				ext_str = ASN1_item_d2i (
+					NULL, (unsigned char**)&data, ext->value->length,
+					ASN1_ITEM_ptr(meth->it)
+				);
+			} else {
+				ext_str = meth->d2i(
+					NULL, (unsigned char**)&data, ext->value->length
+				);
+            }
+			#endif
 			#else
 			ext_str = meth->d2i(NULL, &data, ext->value->length);
 			#endif
