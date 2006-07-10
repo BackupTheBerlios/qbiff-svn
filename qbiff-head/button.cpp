@@ -26,7 +26,8 @@ Button::Button(
 		this,  SLOT   ( slotClicked (void) )
 	);
 	mFolder = text;
-	setFont (QFont ("Dejavu Sans", 10, QFont::Normal));
+	//setFont (QFont ("Dejavu Sans", 10, QFont::Normal));
+	setFont (QFont ("FrutigerNextLT", 10, QFont::Normal));
 	mLastNewCount = 0;
 }
 
