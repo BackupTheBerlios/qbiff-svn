@@ -154,6 +154,5 @@ void ServerHandler::poll (void) {
 void ServerHandler::cleanup (void) {
 	if (mServer) {
 		mServer -> SSLFree();
-		mServer -> exit();
 	}
 }

@@ -87,7 +87,7 @@ int SSLServerConnection::readClient ( void ) {
 		case SSL_ERROR_ZERO_RETURN:
 		break;
 		case SSL_ERROR_SYSCALL:
-			fprintf ( stderr,"SSL Error: Premature close\n" );
+			//fprintf ( stderr,"SSL Error: Premature close\n" );
 			return (
 				(SSL_get_shutdown(ssl) & SSL_RECEIVED_SHUTDOWN) ? 1:0
 			);
