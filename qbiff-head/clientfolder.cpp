@@ -115,21 +115,16 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 		QTextOStream(&servercmd) << "WRITE " << text;
 		mClient -> writeClient (servercmd);
 	}
-	QProcess proc;
+	QProcess* proc = new QProcess();
 	if (mIsPrivate) {
-		proc.addArgument (MY_MAILCLPRIV);
+		proc->addArgument (MY_MAILCLPRIV);
 	} else {
-		proc.addArgument (MY_MAILCLIENT);
+		proc->addArgument (MY_MAILCLIENT);
 	}
-	proc.addArgument (MY_FOLDER + text);
-	proc.start();
-	while (proc.isRunning()) {
-		qApp->processEvents();
-		usleep (1000);
-	}
-	if (btn) {
-		btn->setDisabled (false);
-	}
+	proc->addArgument (MY_FOLDER + text);
+	proc->start();
+	mProcessList.append (proc);
+	mButtonsList.append (btn);
 }
 
 //=========================================
@@ -156,6 +151,24 @@ void ClientFolder::setToggle ( bool toggle ) {
 void ClientFolder::timerDone (void) {
 	mClient -> clientReadWrite ();
 	resize (sizeHint());
+	int pCount = 0;
+	int pRemove[mProcessList.count()];
+	QListIterator<QProcess> it (mProcessList);
+	for (; it.current();++it) {
+		pRemove[pCount] = 0;
+		QProcess *proc = it.current();
+		if (! proc->isRunning()) {
+			mButtonsList.at(pCount)->setDisabled (false);
+			pRemove[pCount] = 1;
+		}
+		pCount++;
+	}
+	for (unsigned int n=0;n<mProcessList.count();n++) {
+		if (pRemove[n] == 1) {
+			mButtonsList.remove (n);
+			mProcessList.remove (n);
+		}
+	}
 }
 
 //=========================================

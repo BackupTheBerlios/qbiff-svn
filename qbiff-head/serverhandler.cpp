@@ -152,6 +152,8 @@ void ServerHandler::poll (void) {
 // cleanup
 //-----------------------------------------
 void ServerHandler::cleanup (void) {
-	mServer -> SSLFree();
-	mServer -> exit();
+	if (mServer) {
+		mServer -> SSLFree();
+		mServer -> exit();
+	}
 }

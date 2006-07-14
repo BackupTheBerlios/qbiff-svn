@@ -61,14 +61,10 @@ Notify::Notify ( Parser* parse ) {
 	sigaction (SIGIO , &pending , 0);
 
 	struct sigaction action;
-	action.sa_sigaction = handleNotifyCreateEvent;
+	action.sa_sigaction = handleNotifyEvent;
 	sigemptyset (&action.sa_mask);
 	action.sa_flags = SA_SIGINFO;
 	sigaction (SIGRTMIN + 0 , &action , 0);
-
-	action.sa_sigaction = handleNotifyDeleteEvent;
-	sigemptyset (&action.sa_mask);
-	action.sa_flags = SA_SIGINFO;
 	sigaction (SIGRTMIN + 1 , &action , 0);
 
 	sigemptyset (&block_set);
@@ -96,7 +92,7 @@ void Notify::init ( bool clean ) {
 	int FDcount = 0;
 	for (; it.current(); ++it) {
 		QPoint* dirCount = 0;
-		for (int i=0;i<2;i++) {
+		for (unsigned int i=0;i<subdir.count();i++) {
 			if (i == 0) {
 				dirCount = new QPoint;
 			}
@@ -125,10 +121,15 @@ void Notify::init ( bool clean ) {
 				);
 				mInitialFolderList.append (initial);
 			}
-
 		}
 	}
 	sigprocmask(SIG_UNBLOCK, &block_set,0);
+	mTimer = new QTimer ( this );
+	connect ( 
+		mTimer , SIGNAL (timeout   (void)),
+		this   , SLOT   (timerDone (void))
+	);
+	mTimer -> start ( 10, FALSE );
 }
 
 //=========================================
@@ -255,19 +256,26 @@ QList<NotifyCount> Notify::getInitialFolderList (void) {
 }
 
 //=========================================
-// Real time signal SIGRTMIN0 arrived
+// enqueue
 //-----------------------------------------
-void handleNotifyCreateEvent ( int, siginfo_t* si , void* ) {
-	Notify* obj = (Notify*)self;
-	obj -> sendSignal (si->si_fd,QBIFF_CREATE);
+void Notify::enqueue (int fd, int fl) {
+	int* flag = (int*)malloc (sizeof(int));
+	*flag = fl;
+	mNotifyQueue.insert (fd,flag);
 }
 
 //=========================================
-// Real time signal SIGRTMIN1 arrived
+// Real time signal arrived
 //-----------------------------------------
-void handleNotifyDeleteEvent ( int, siginfo_t* si , void* ) {
+void handleNotifyEvent ( int s, siginfo_t* si , void* ) {
 	Notify* obj = (Notify*)self;
-	obj -> sendSignal (si->si_fd,QBIFF_DELETE);
+	if (s == SIGRTMIN) {
+		// Real time signal SIGRTMIN0 arrived
+		obj -> enqueue (si->si_fd,QBIFF_CREATE);
+	} else {
+		// Real time signal SIGRTMIN1 arrived
+		obj -> enqueue (si->si_fd,QBIFF_DELETE);
+	}
 }
 
 //=========================================
@@ -277,8 +285,27 @@ void handlePendingEvent ( int, siginfo_t* , void* ) {
 	// ... /
 	// RT signal queue is full, the result is a SIGIO and we
 	// need to check all notify-directories
-	// ...
+	// ----
 	if (pServer) {
 		pServer -> poll();
 	}
+}
+
+//=========================================
+// timerDone
+//-----------------------------------------
+void Notify::timerDone (void) {
+	// .../
+	// every time the timer expires this method is called.
+	// the function will send a signal including the file
+	// descriptor of the touched file and the flag whether this
+	// file was created or deleted
+	// ----
+	QIntDictIterator<int> it (mNotifyQueue);
+	for (; it.current(); ++it) {
+		int fd = it.currentKey();
+		int flag = *it.current();
+		sendSignal (fd,flag);
+	}
+	mNotifyQueue.clear();
 }

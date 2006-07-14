@@ -87,31 +87,31 @@ void SSLClient::clientReadWrite ( void ) {
 	QString line;
 	int len = 0;
 	if (FD_ISSET (mSocket,&readFDs)) {
-	do {
-		int r = SSL_read (ssl,buf,1);
-		switch (SSL_get_error(ssl,r)) {
-		case SSL_ERROR_NONE:
-			len=r;
-		break;
-		case SSL_ERROR_WANT_READ:
-			continue;
-		break;	
-		case SSL_ERROR_ZERO_RETURN:
-			continue;
-		break;
-		case SSL_ERROR_SYSCALL:
-			qerror ("SSL Error: Premature close");
-		break;
-		default:
-			continue;
-		break;
-		}
-		if (buf[0] == '\n') {
-			gotLine (line);
-		} else {
-			line.append(buf[0]);
-		}
-	} while (SSL_pending(ssl));
+		do {
+			int r = SSL_read (ssl,buf,1);
+			switch (SSL_get_error(ssl,r)) {
+			case SSL_ERROR_NONE:
+				len=r;
+			break;
+			case SSL_ERROR_WANT_READ:
+				continue;
+			break;	
+			case SSL_ERROR_ZERO_RETURN:
+				continue;
+			break;
+			case SSL_ERROR_SYSCALL:
+				qerror ("SSL Error: Premature close");
+			break;
+			default:
+				continue;
+			break;
+			}
+			if (buf[0] == '\n') {
+				gotLine (line);
+			} else {
+				line.append(buf[0]);
+			}
+		} while (SSL_pending(ssl));
 	}
 }
 
@@ -123,8 +123,9 @@ void SSLClient::writeClient ( const QString & data ) {
 	mDataToWrite = true;
 	FD_SET (mSocket,&writeFDs);
 	QString stream (data + "\n");
-	char buf[stream.length()];
-	memcpy (buf,stream.data(),stream.length());
+	char buf[stream.length()+1];
+	memset (&buf, '\0', sizeof(buf));
+	strncpy (buf,stream.data(),stream.length());
 	for (unsigned int nwritten = 0;nwritten < sizeof(buf); nwritten += err) {
 		err = SSL_write(ssl,buf + nwritten, sizeof(buf) - nwritten);
 		switch (SSL_get_error(ssl,err)) {

@@ -42,6 +42,13 @@ SSLServerInit::SSLServerInit ( QObject* parent ) : SSLCommon ( parent ) {
 // Connection loop...
 //-----------------------------------------
 void SSLServerInit::openConnection (void) {
+	sigset_t block_set;
+	sigemptyset (&block_set);
+	sigaddset   (&block_set,SIGIO);
+	sigaddset   (&block_set,SIGINT);
+	sigaddset   (&block_set,SIGRTMIN);
+	sigaddset   (&block_set,SIGRTMIN+1);
+	sigprocmask (SIG_BLOCK, &block_set,0);
 	while (1) {
 		SSL* ssl;
 		if (BIO_do_accept(acc) <= 0) {

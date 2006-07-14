@@ -61,6 +61,8 @@ class ClientFolder : public QWidget {
 	QDict<Button>       mButton;
 	QDict<ClientInfo>   mInfo;
 	QList<char>         mFolderNames;
+	QList<QProcess>     mProcessList;
+	QList<QButton>      mButtonsList;
 	bool                mRemoteMail;
 	bool                mIsPrivate;
 };

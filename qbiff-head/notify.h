@@ -22,6 +22,7 @@ STATUS        : Status: Beta
 #include <stdlib.h>
 #include <qlist.h>
 #include <qdict.h>
+#include <qtimer.h>
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -40,8 +41,7 @@ STATUS        : Status: Beta
 //=========================================
 // Functions...
 //-----------------------------------------
-void handleNotifyCreateEvent (int,siginfo_t*,void*);
-void handleNotifyDeleteEvent (int,siginfo_t*,void*);
+void handleNotifyEvent  (int,siginfo_t*,void*);
 void handlePendingEvent (int,siginfo_t*,void*);
 
 //=========================================
@@ -66,11 +66,16 @@ class NotifyCount {
 class Notify : public QObject {
 	Q_OBJECT
 
-	public:
-	Notify ( Parser* );
+	private:
+	QTimer*  mTimer;
+	QList<NotifyCount> mInitialFolderList;
+	QIntDict<int>      mNotifyQueue;
+	QList<int> mFDs;
+	Parser* mParse;
 
 	public:
 	QList<NotifyCount> getInitialFolderList (void);
+	void enqueue    ( int,int );
 	bool sendSignal ( int,int );
 	void init ( bool = false );
 
@@ -79,19 +84,20 @@ class Notify : public QObject {
 	void activateFolderNotification ( const QString&,const QString& );
 	void cleanActiveFolderNotification ( void );
 
-	private:
-	QList<NotifyCount> mInitialFolderList;
-	QList<int> mFDs;
-	Parser* mParse;
-
 	public:
 	QIntDict<QString> mNotifyDirs;
 	QIntDict<QPoint>  mNotifyCount;
+
+	private slots:
+	void timerDone (void);
 
 	signals:
 	void sigNotify ( QString*,QPoint* );
 	void sigCreate ( QString*,QPoint* );
 	void sigDelete ( QString*,QPoint* );
+
+	public:
+	Notify ( Parser* );
 };
 
 #endif
