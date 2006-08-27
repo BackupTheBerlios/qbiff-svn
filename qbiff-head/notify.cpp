@@ -124,12 +124,14 @@ void Notify::init ( bool clean ) {
 		}
 	}
 	sigprocmask(SIG_UNBLOCK, &block_set,0);
+	#if 0
 	mTimer = new QTimer ( this );
 	connect ( 
 		mTimer , SIGNAL (timeout   (void)),
 		this   , SLOT   (timerDone (void))
 	);
 	mTimer -> start ( 10, FALSE );
+	#endif
 }
 
 //=========================================
@@ -271,10 +273,12 @@ void handleNotifyEvent ( int s, siginfo_t* si , void* ) {
 	Notify* obj = (Notify*)self;
 	if (s == SIGRTMIN) {
 		// Real time signal SIGRTMIN0 arrived
-		obj -> enqueue (si->si_fd,QBIFF_CREATE);
+		// obj -> enqueue (si->si_fd,QBIFF_CREATE);
+		obj -> sendSignal (si->si_fd, QBIFF_CREATE);
 	} else {
 		// Real time signal SIGRTMIN1 arrived
-		obj -> enqueue (si->si_fd,QBIFF_DELETE);
+		//obj -> enqueue (si->si_fd,QBIFF_DELETE);
+		obj -> sendSignal (si->si_fd, QBIFF_DELETE);
 	}
 }
 
