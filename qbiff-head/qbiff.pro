@@ -22,6 +22,14 @@ HEADERS   += clientinfo.h
 HEADERS   += button.h
 HEADERS   += parser.h
 HEADERS   += notify.h
+
 CONFIG    += qt warn_on release
-TARGET    += qbiff
 unix:LIBS += -lssl -lcrypto -lXtst
+TARGET    += qbiff
+
+RPM_OPT_FLAGS ?= -O2
+
+QMAKE_CXXFLAGS = $(RPM_OPT_FLAGS) -fno-strict-aliasing
+unix:INCLUDEPATH += /usr/X11R6/include
+unix:INCLUDEPATH += /usr/include/X11
+unix:INCLUDEPATH += /usr/include/xorg
