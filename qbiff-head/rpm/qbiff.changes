@@ -1,4 +1,10 @@
 ---------------------------------------------------------
+Tue Mar 25 13:19:28 CET 2008 - ms@suse.de
+
+- ported to qt4, make it more flexible, server client
+  subpackages
+
+---------------------------------------------------------
 Wed Feb  1 11:57:21 CET 2006 - ms@suse.de
 
 - added toggle button to be able to switch between private

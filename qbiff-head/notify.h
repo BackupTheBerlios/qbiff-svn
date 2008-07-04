@@ -17,11 +17,11 @@ STATUS        : Status: Beta
 #define NOTIFY_H 1
 
 #include <qwidget.h>
-#include <qintdict.h>
+#include <qhash.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <qlist.h>
-#include <qdict.h>
+#include <qhash.h>
 #include <qtimer.h>
 #include <unistd.h>
 #include <signal.h>
@@ -68,13 +68,13 @@ class Notify : public QObject {
 
 	private:
 	QTimer*  mTimer;
-	QList<NotifyCount> mInitialFolderList;
-	QIntDict<int>      mNotifyQueue;
+	QList<NotifyCount*> mInitialFolderList;
+	QHash<int,int> mNotifyQueue;
 	QList<int> mFDs;
 	Parser* mParse;
 
 	public:
-	QList<NotifyCount> getInitialFolderList (void);
+	QList<NotifyCount*> getInitialFolderList (void);
 	void enqueue    ( int,int );
 	bool sendSignal ( int,int );
 	void init ( bool = false );
@@ -85,8 +85,8 @@ class Notify : public QObject {
 	void cleanActiveFolderNotification ( void );
 
 	public:
-	QIntDict<QString> mNotifyDirs;
-	QIntDict<QPoint>  mNotifyCount;
+	QHash<int,QString*> mNotifyDirs;
+	QHash<int,QPoint*>  mNotifyCount;
 
 	private slots:
 	void timerDone (void);

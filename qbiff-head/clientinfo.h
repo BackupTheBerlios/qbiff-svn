@@ -21,6 +21,7 @@ STATUS        : Status: Up-to-date
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qtimer.h>
+#include <qtextstream.h>
 
 #include "config.h"
 
@@ -38,8 +39,8 @@ class ClientInfo : public QWidget {
 
 	public:
 	ClientInfo (
-		QString&,QWidget*,int,const char* =0,
-		bool =false,WFlags = Qt::WStyle_Customize | Qt::WStyle_NoBorder
+		QString&,QWidget*,int,
+		bool =false,Qt::WFlags = Qt::FramelessWindowHint
 	);
 
 	public:

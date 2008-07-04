@@ -19,6 +19,11 @@ STATUS        : Status: Beta
 // Globals
 //-----------------------------------------
 extern QString serverName;
+extern QString CAFILE;
+extern QString DH1024;
+extern QString DH512;
+extern QString CLIENT_CERTFILE;
+extern int serverPort;
 
 //=========================================
 // Constructor
@@ -125,7 +130,7 @@ void SSLClient::writeClient ( const QString & data ) {
 	QString stream (data + "\n");
 	char buf[stream.length()+1];
 	memset (&buf, '\0', sizeof(buf));
-	strncpy (buf,stream.data(),stream.length());
+	strncpy (buf,stream.toLatin1().data(),stream.length());
 	for (unsigned int nwritten = 0;nwritten < sizeof(buf); nwritten += err) {
 		err = SSL_write(ssl,buf + nwritten, sizeof(buf) - nwritten);
 		switch (SSL_get_error(ssl,err)) {
@@ -152,14 +157,14 @@ void SSLClient::connectTCP (void) {
 	struct hostent *hp;
 	struct sockaddr_in addr;
 
-	if (!(hp=gethostbyname(serverName))) {
+	if (!(hp=gethostbyname(serverName.toLatin1().data()))) {
 		qerror ("Couldn't resolve host");
 	}
 	bzero(&addr,sizeof(addr));
 	bcopy (hp->h_addr,(char*)&addr.sin_addr,hp->h_length);
 	addr.sin_addr=*(struct in_addr*)hp->h_addr_list[0];
 	addr.sin_family=hp->h_addrtype;
-	addr.sin_port=htons(PORT);
+	addr.sin_port=htons(serverPort);
 
 	if ((mSocket = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
 		qerror ("Couldn't create socket");
@@ -175,18 +180,22 @@ void SSLClient::connectTCP (void) {
 void SSLClient::setupClientCTX (void) {
 	ctx = SSL_CTX_new(SSLv23_method(  ));
 	SSL_CTX_set_default_passwd_cb (ctx, passwd_cb);
-	if (SSL_CTX_load_verify_locations(ctx, CAFILE, CADIR) != 1) {
+	if (SSL_CTX_load_verify_locations(
+		ctx, CAFILE.toLatin1().data(), CADIR) != 1
+	) {
 		qerror("Error loading CA file and/or directory");
 	}
 	if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
 		qerror("Error loading default CA file and/or directory");
 	}
-	if (SSL_CTX_use_certificate_chain_file(ctx, CLIENT_CERTFILE) != 1) {
+	if (SSL_CTX_use_certificate_chain_file(
+		ctx, CLIENT_CERTFILE.toLatin1().data()) != 1
+	) {
 		qerror("Error loading certificate from file");
 	}
-	if (
-		SSL_CTX_use_PrivateKey_file(ctx,CLIENT_CERTFILE,SSL_FILETYPE_PEM) != 1
-	) {
+	if (SSL_CTX_use_PrivateKey_file(
+		ctx,CLIENT_CERTFILE.toLatin1().data(),SSL_FILETYPE_PEM
+	) != 1) {
 		qerror("Error loading private key from file");
 	}
 	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);

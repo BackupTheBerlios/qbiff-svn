@@ -22,7 +22,9 @@ STATUS        : Status: Beta
 #include <qpixmap.h>
 #include <qfile.h>
 #include <getopt.h>
+#include <qiodevice.h>
 
+#include "config.h"
 #include "serverhandler.h"
 #include "clientfolder.h"
 
@@ -34,6 +36,22 @@ ClientFolder*  pFolder = NULL;
 ServerHandler* pServer = NULL;
 int  serverPort        = PORT;
 QString serverName     = SERVER;
+QString mailClient     = MY_MAILCLIENT;
+QString mailPrivate    = MY_MAILCLPRIV;
+QString baseDir        = BASEDIR;
+QString myFolder       = MY_FOLDER;
+
+//=========================================
+// Globals
+//-----------------------------------------
+QString CAFILE;
+QString DH1024;
+QString DH512;
+QString SERVER_CERTFILE;
+QString CLIENT_CERTFILE;
+QString PIXINFO;
+QString PIXPUBL;
+QString PIXPRIV;
 
 //=========================================
 // Global functions
@@ -78,15 +96,19 @@ int main(int argc,char*argv[]) {
 	int option_index = 0;
 	static struct option long_options[] =
 	{
-		{"remote"  , 0 , 0 , 'r'},
-		{"server"  , 1 , 0 , 's'},
-		{"port"    , 1 , 0 , 'p'},
-		{"toggle"  , 0 , 0 , 't'},
-		{"help"    , 0 , 0 , 'h'},
-		{0         , 0 , 0 , 0  }
+		{"remote"     , 0 , 0 , 'r'},
+		{"server"     , 1 , 0 , 's'},
+		{"port"       , 1 , 0 , 'p'},
+		{"mailfolder" , 1 , 0 , 'f'},
+		{"readmail"   , 1 , 0 , 'm'},
+		{"readpriv"   , 1 , 0 , 'i'},
+		{"basedir"    , 1 , 0 , 'b'},
+		{"toggle"     , 0 , 0 , 't'},
+		{"help"       , 0 , 0 , 'h'},
+		{0            , 0 , 0 , 0  }
 	};
 	int c = getopt_long (
-		argc, argv, "rhs:p:t",long_options, &option_index
+		argc, argv, "rhs:p:tf:m:i:b:",long_options, &option_index
 	);
 	if (c == -1)
 	break;
@@ -108,12 +130,29 @@ int main(int argc,char*argv[]) {
 		remoteMail = true;
 	break;
 
+	case 'f':
+		myFolder = *(new QString (optarg));
+		myFolder += "/";
+	break;
+
 	case 's':
 		serverName = *(new QString (optarg));
 	break;
 
 	case 'p':
 		serverPort = (new QString (optarg))->toInt();
+	break;
+
+	case 'm':
+		mailClient = *(new QString (optarg));
+	break;
+
+	case 'i':
+		mailPrivate= *(new QString (optarg));
+	break;
+
+	case 'b':
+		baseDir = *(new QString (optarg));
 	break;
 
 	case 'h':
@@ -124,6 +163,18 @@ int main(int argc,char*argv[]) {
 	}
 	}
 
+	//=======================================
+	// certification stuff
+	//---------------------------------------
+	CAFILE         = baseDir + "/cert-server/rootcert.pem";
+	DH1024         = baseDir + "/cert-server/dh1024.pem";
+	DH512          = baseDir + "/cert-server/dh512.pem";
+	SERVER_CERTFILE= baseDir + "/cert-server/server.pem";
+	CLIENT_CERTFILE= baseDir + "/cert-client/client.pem";
+	PIXINFO        = baseDir + "/pixmaps/tooltip.xpm";
+	PIXPUBL        = baseDir + "/pixmaps/public.png";
+	PIXPRIV        = baseDir + "/pixmaps/private.png";
+
 	//=========================================
 	// create entity Server or Client
 	//-----------------------------------------
@@ -132,19 +183,19 @@ int main(int argc,char*argv[]) {
 		pidfile.sprintf ("/var/tmp/qbiff.%d.pid",serverPort);
 		QFile run (pidfile);
 		if (run.exists()) {
-		if (run.open( IO_ReadOnly )) {
+		if (run.open( QIODevice::ReadOnly )) {
 			QTextStream stream ( &run );
 			QString pid = stream.readLine();
 			run.close();
 			if (kill (pid.toInt(),0) == 0) {
-				printf ("qbiff::already running: %s\n",pid.ascii());
+				printf ("qbiff::already running: %s\n",pid.toLatin1().data());
 				exit (0);
 			} else {
-				unlink (pidfile);
+				unlink (pidfile.toLatin1().data());
 			}
 		}
 		}
-		if ( ! run.open( IO_WriteOnly ) ) {
+		if ( ! run.open( QIODevice::WriteOnly ) ) {
 			printf ("qbiff::couldn't open pid file\n");
 			exit (1);
 		}
@@ -154,13 +205,13 @@ int main(int argc,char*argv[]) {
 		run.close();
 		pServer = new ServerHandler;
 	} else {
-		QWidget::WFlags wflags = Qt::WType_TopLevel;
-		wflags |= Qt::WStyle_Customize | Qt::WStyle_NoBorder;
+		Qt::WFlags wflags = Qt::Window;
+		wflags |= Qt::FramelessWindowHint;
 		pFolder = new ClientFolder ( wflags );
-		pFolder -> setFixedHeight(0);
+		//pFolder -> setFixedHeight(0);
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
-		app.setMainWidget ( pFolder );
+		//app.setMainWidget ( pFolder );
 		pFolder-> show ();
 	}
 	return app.exec();
@@ -180,13 +231,22 @@ void usage (void) {
 	printf ("   flag files can be used to start a terminal based program\n");
 	printf ("   on the remote side whereas the controling terminal\n");
 	printf ("   remains local\n");
-	printf ("[ -s | --server ]\n");
+	printf ("[ -s | --server <ip> ]\n");
 	printf ("   in client mode: specify server to connect.\n");
-	printf ("[ -p | --port ]\n");
+	printf ("[ -p | --port <number> ]\n");
 	printf ("   in client mode: specify server port to connect.\n");
 	printf ("[ -t | --toggle ]\n");
 	printf ("   show toggle button to be able to switch between\n");
 	printf ("   readmail and readmail.private to be called.\n");
+	printf ("[ -m | --readmail <program> ]\n");
+	printf ("   call this program as standard mail reader\n");
+	printf ("[ -i | --privmail <program> ]\n");
+	printf ("   call this program as private mail reader (toggle)\n");
+	printf ("[ -b | --basedir <directory> ]\n");
+	printf ("   base directory for metadata, default: /usr/share/qbiff\n");
+	printf ("   certification and pixmap information is stored here\n");
+	printf ("[ -f | --mailfolder <directory> ]\n");
+	printf ("   path to maildir organised mail files\n");
 	printf ("--\n");
 	exit (1);
 }

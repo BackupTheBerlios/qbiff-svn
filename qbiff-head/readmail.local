@@ -1,7 +1,7 @@
 #!/bin/sh
-
 title=`basename $1`
 
-xterm -bg black -geom 80x55 -fg white +sb \
-	-fn "-misc-console-medium-r-normal--16-160-72-72-c-80-iso10646-1" \
+#-fn "-misc-console-medium-r-normal--16-160-72-72-c-80-iso10646-1" 
+xterm -bg black -geom 80x50 -fg white +sb \
+	-fn "7x13bold" \
 	-T $title -e mutt -f $1

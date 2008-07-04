@@ -21,7 +21,7 @@ STATUS        : Status: Beta
 #include <qregexp.h>
 #include <qtextstream.h>
 #include <qfile.h>
-#include <qdict.h>
+#include <qhash.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>

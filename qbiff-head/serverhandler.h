@@ -63,7 +63,7 @@ class ServerHandler : public QObject {
 	ServerHandler ( QObject * p = 0);
 
 	private:
-	QList<ServerFolder> mFolderList;
+	QList<ServerFolder*> mFolderList;
 	SSLServer* mServer;
 	Notify*    mNotify; 
 

@@ -65,7 +65,7 @@ void ServerFolder::updateFolder (void) {
 	if (mServer->isOpen()) {
 		QString folderStatus = status();
 		QString stream;
-		QTextOStream(&stream) << mFolder
+		QTextStream(&stream) << mFolder
 			<< ":" << folderStatus << ":" << mNew << ":" << mCurrent;
 		mServer -> writeClient (stream);
 	}
@@ -88,10 +88,10 @@ ServerHandler::ServerHandler ( QObject * p ) : QObject (p) {
 		mServer , SIGNAL ( clientInit (void) ),
 		this    , SLOT   ( clientInit (void) )
 	);
-	QList<NotifyCount> initialFolders = mNotify->getInitialFolderList();
-	QListIterator<NotifyCount> io (initialFolders);
-	for (; io.current(); ++io) {
-		NotifyCount* data = io.current();
+	QList<NotifyCount*> initialFolders = mNotify->getInitialFolderList();
+	QListIterator<NotifyCount*> io (initialFolders);
+	while (io.hasNext()) {
+		NotifyCount* data = io.next();
 		ServerFolder* folder = new ServerFolder (
 			data->getFolder(),data->getCount(),mServer
 		);
@@ -104,9 +104,9 @@ ServerHandler::ServerHandler ( QObject * p ) : QObject (p) {
 // slotNotify
 //-----------------------------------------
 void ServerHandler::slotNotify (QString* mailbox,QPoint* count) {
-	QListIterator<ServerFolder> it (mFolderList);
-	for (; it.current(); ++it) {
-		ServerFolder* thisFolder = it.current();
+	QListIterator<ServerFolder*> it (mFolderList);
+	while (it.hasNext()) {
+		ServerFolder* thisFolder = it.next();
 		if (thisFolder->getFolder() == *mailbox) {
 			thisFolder->setStatus (count);
 			thisFolder->updateFolder();
@@ -119,9 +119,9 @@ void ServerHandler::slotNotify (QString* mailbox,QPoint* count) {
 // clientInit
 //-----------------------------------------
 void ServerHandler::clientInit (void) {
-	QListIterator<ServerFolder> it (mFolderList);
-	for (; it.current(); ++it) {
-		ServerFolder* thisFolder = it.current();
+	QListIterator<ServerFolder*> it (mFolderList);
+	while (it.hasNext()) {
+		ServerFolder* thisFolder = it.next();
 		thisFolder -> updateFolder();
 	}
 }
@@ -136,10 +136,10 @@ void ServerHandler::poll (void) {
 	// ...
 	mNotify -> init (true);
 	mFolderList.clear();
-	QList<NotifyCount> initialFolders = mNotify->getInitialFolderList();
-	QListIterator<NotifyCount> io (initialFolders);
-	for (; io.current(); ++io) {
-		NotifyCount* data = io.current();
+	QList<NotifyCount*> initialFolders = mNotify->getInitialFolderList();
+	QListIterator<NotifyCount*> io (initialFolders);
+	while (io.hasNext()) {
+		NotifyCount* data = io.next();
 		ServerFolder* folder = new ServerFolder (
 			data->getFolder(),data->getCount(),mServer
 		);

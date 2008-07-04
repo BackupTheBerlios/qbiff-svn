@@ -18,6 +18,18 @@ STATUS        : Status: Beta
 //=========================================
 // Globals...
 //-----------------------------------------
+extern QString DH1024;
+extern QString DH512;
+
+//=========================================
+// Globals...
+//-----------------------------------------
+extern QString DH1024;
+extern QString DH512;
+
+//=========================================
+// Globals...
+//-----------------------------------------
 DH *dh512  = NULL;
 DH *dh1024 = NULL;
 
@@ -61,7 +73,7 @@ int passwd_cb (char* buf,int size,int,void*) {
 //-----------------------------------------
 void init_dhparams (void) {
 	BIO *bio;
-	bio = BIO_new_file(DH512, "r");
+	bio = BIO_new_file(DH512.toLatin1().data(), "r");
 	if (!bio) {
 		qerror("Error opening file dh512.pem");
 	}
@@ -71,7 +83,7 @@ void init_dhparams (void) {
 	}
 	BIO_free(bio);
 
-	bio = BIO_new_file(DH1024, "r");
+	bio = BIO_new_file(DH1024.toLatin1().data(), "r");
 	if (!bio) {
 		qerror("Error opening file dh1024.pem");
 	}

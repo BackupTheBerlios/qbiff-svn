@@ -25,7 +25,7 @@ QList<SSLServerConnection> mSSLConnections;
 //-----------------------------------------
 SSLServer::SSLServer ( void ) {
 	mInit = new SSLServerInit (this);
-	connect (
+	QObject::connect (
 		mInit , SIGNAL ( clientInit       (void) ),
 		this  , SLOT   ( serverClientInit (void) )
 	);

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+unset DISPLAY
+if [ -x ./qbiff ];then
+	./qbiff $@
+else
+	qbiff $@
+fi
+#!/bin/bash
+
+unset DISPLAY
+if [ -x ./qbiff ];then
+	./qbiff $@
+else
+	qbiff $@
+fi

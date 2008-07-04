@@ -28,6 +28,7 @@ void* self = NULL;
 // External Globals
 //------------------------------------
 extern ServerHandler* pServer;
+extern QString myFolder;
 
 //====================================
 // Constructor
@@ -80,24 +81,25 @@ Notify::Notify ( Parser* parse ) {
 //------------------------------------
 void Notify::init ( bool clean ) {
 	sigprocmask(SIG_BLOCK, &block_set,0);
-	QList<char> mFolderNames = mParse -> folderList();
+	QList<char*> mFolderNames = mParse -> folderList();
 	if (clean) {
 		printf ("________cleaning: pollable event occured\n");
 		cleanActiveFolderNotification();
 	}
-	QList<char> subdir;
-	subdir.append ("/new");
-	subdir.append ("/cur");
-	QListIterator<char> it ( mFolderNames );
+	QList<char*> subdir;
+	subdir.append ((char*)"/new");
+	subdir.append ((char*)"/cur");
+	QListIterator<char*> it ( mFolderNames );
 	int FDcount = 0;
-	for (; it.current(); ++it) {
+	while (it.hasNext()) {
 		QPoint* dirCount = 0;
-		for (unsigned int i=0;i<subdir.count();i++) {
+		char* value = it.next();
+		for (int i=0;i<subdir.count();i++) {
 			if (i == 0) {
 				dirCount = new QPoint;
 			}
 			int count = getFiles (
-				MY_FOLDER+QString(it.current())+QString(subdir.at(i))+"/*"
+				myFolder + QString(value+QString(subdir.at(i))+"/*")
 			);
 			if (i == 0) {
 				dirCount->setX (count);
@@ -106,18 +108,18 @@ void Notify::init ( bool clean ) {
 				dirCount->setY (count);
 			}
 			activateFolderNotification (
-				it.current(),subdir.at(i)
+				value,subdir.at(i)
 			);
 			if (i == 1) {
 				int start = FDcount;
 				int ended = FDcount + 4;
 				for (int n=start;n<ended;n++) {
-					int fd = *mFDs.at(n);
+					int fd = mFDs.at(n);
 					mNotifyCount.insert ( fd, dirCount );
 				}
 				FDcount = ended;
 				NotifyCount* initial = new NotifyCount (
-					it.current(),*dirCount
+					value,*dirCount
 				);
 				mInitialFolderList.append (initial);
 			}
@@ -141,8 +143,9 @@ void Notify::activateFolderNotification (
 	const QString& folderName, const QString& subDir
 ) {
 	for (int n=0;n<2;n++) {
+		QString fname (myFolder + folderName+subDir);
 		int fd = open (
-			MY_FOLDER+folderName+subDir,
+			fname.toLatin1().data(),
 			O_RDONLY
 		);
 		if (fd == -1) {
@@ -169,9 +172,7 @@ void Notify::activateFolderNotification (
 		mNotifyDirs.insert (
 			fd, folder
 		);
-		int* saveFD = (int*)malloc (sizeof (int));
-		*saveFD = fd;
-		mFDs.append (saveFD);
+		mFDs.append (fd);
 	}
 }
 
@@ -180,10 +181,11 @@ void Notify::activateFolderNotification (
 //-----------------------------------------
 void Notify::cleanActiveFolderNotification (void) {
 	QListIterator<int> fd ( mFDs );
-	for (; fd.current(); ++fd) {
-		fcntl (*fd.current(), F_NOTIFY, 0);
-		fcntl (*fd.current(), F_SETSIG, 0);
-		close (*fd.current());
+	while (fd.hasNext()) {
+		int value = fd.next();
+		fcntl (value, F_NOTIFY, 0);
+		fcntl (value, F_SETSIG, 0);
+		close (value);
 	}
 	mInitialFolderList.clear();
 	mNotifyDirs.clear();
@@ -197,7 +199,7 @@ void Notify::cleanActiveFolderNotification (void) {
 int Notify::getFiles (const QString& pattern) {
 	int count = 0;
 	glob_t globbuf;
-	if (glob (pattern.ascii(), GLOB_MARK, 0, &globbuf) == 0) {
+	if (glob (pattern.toLatin1().data(), GLOB_MARK, 0, &globbuf) == 0) {
 		count = globbuf.gl_pathc;
 		#if 0
 		for (unsigned int n=0;n< globbuf.gl_pathc;n++) {
@@ -217,12 +219,12 @@ bool Notify::sendSignal (int fd,int flag) {
 	if ( mNotifyDirs[fd] ) {
 		QString* pFolder = mNotifyDirs[fd];
 		QPoint*  count   = mNotifyCount[fd];
-		QStringList tokens = QStringList::split ( "/", *pFolder );
+		QStringList tokens = pFolder->split ( "/" );
 		QString folder  = tokens.first();
 		QString dirname = tokens.last();
 		switch (flag) {
 			case QBIFF_CREATE:
-				printf ("________create %s %p\n",pFolder->ascii(),count);
+				printf ("________create %s %p\n",pFolder->toLatin1().data(),count);
 				if (dirname == "new") {
 					count -> rx()++;
 				} else {
@@ -231,7 +233,7 @@ bool Notify::sendSignal (int fd,int flag) {
 				sigCreate ( &folder,count );
 			break;
 			case QBIFF_DELETE:
-				printf ("________delete %s %p\n",pFolder->ascii(),count);
+				printf ("________delete %s %p\n",pFolder->toLatin1().data(),count);
 				if (dirname == "new") {
 					count -> rx()--;
 				} else {
@@ -253,7 +255,7 @@ bool Notify::sendSignal (int fd,int flag) {
 //=========================================
 // getInitialFolderList
 //-----------------------------------------
-QList<NotifyCount> Notify::getInitialFolderList (void) {
+QList<NotifyCount*> Notify::getInitialFolderList (void) {
 	return mInitialFolderList;
 }
 
@@ -261,9 +263,7 @@ QList<NotifyCount> Notify::getInitialFolderList (void) {
 // enqueue
 //-----------------------------------------
 void Notify::enqueue (int fd, int fl) {
-	int* flag = (int*)malloc (sizeof(int));
-	*flag = fl;
-	mNotifyQueue.insert (fd,flag);
+	mNotifyQueue.insert (fd,fl);
 }
 
 //=========================================
@@ -305,10 +305,11 @@ void Notify::timerDone (void) {
 	// descriptor of the touched file and the flag whether this
 	// file was created or deleted
 	// ----
-	QIntDictIterator<int> it (mNotifyQueue);
-	for (; it.current(); ++it) {
-		int fd = it.currentKey();
-		int flag = *it.current();
+	QHashIterator<int, int> it (mNotifyQueue);
+	while (it.hasNext()) {
+		it.next();
+		int fd   = it.key();
+		int flag = it.value();
 		sendSignal (fd,flag);
 	}
 	mNotifyQueue.clear();

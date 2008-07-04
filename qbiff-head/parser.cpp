@@ -22,27 +22,26 @@ STATUS        : Status: Beta
 //-----------------------------------------
 Parser::Parser ( const QString & file ) {
 	mFile = new QFile (file);
-	if (! mFile -> open(IO_ReadOnly)) {
-		printf ("Parser::couldn't open file: %s\n",file.ascii());
+	if (! mFile -> open(QIODevice::ReadOnly)) {
+		printf ("Parser::couldn't open file: %s\n",file.toLatin1().data());
 		exit (1);
 	}
-	QString line;
-	while ((mFile->readLine(line,MAX_LINE_LENGTH)) != 0) {
-		if ((line[0] == '#') || (line.isEmpty())) {
+	QTextStream stream( mFile );
+	QString* line = new QString();
+	while ( !stream.atEnd() ) {
+		*line = stream.readLine();
+		if ((line->at(0) == '#') || (line->isEmpty())) {
 			continue;
 		}
-		line.truncate(line.length()-1);
-		QString *name = new QString (line);
-		mList.append (name->ascii());
-		if (mFile->atEnd()) {
-			break;
-		}
+		char* name = (char*)malloc(sizeof(char)*line->length());
+		strcpy (name,line->toLatin1().data());
+		mList.append (name);
 	}
 }
 
 //=========================================
 // return file list
 //-----------------------------------------
-QList<char> Parser::folderList (void) {
+QList<char*> Parser::folderList (void) {
 	return mList;
 }

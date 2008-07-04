@@ -16,25 +16,32 @@ STATUS        : Status: Beta
 #include "clientinfo.h"
 
 //============================================
+// Globals...
+//--------------------------------------------
+extern QString PIXINFO; 
+extern QString PIXPUBL;
+extern QString PIXPRIV;
+
+//============================================
 // Constructor
 //--------------------------------------------
 ClientInfo::ClientInfo (
 	QString &folder, QWidget* parent, int newcount,
-	const char* name, bool modal, WFlags f
+	bool modal, Qt::WFlags f
 ) : QWidget ( 
-	parent,name,
-	(modal ? (f|WType_Modal) : f) | WType_TopLevel | WStyle_Dialog 
+	parent, (modal ? (f|(Qt::WFlags)Qt::WindowModal) : f)| Qt::Window|Qt::Dialog
 ) {
 	QBoxLayout* layer1 = new  QVBoxLayout ( this );
 	mLabel  = new QLabel ( this );
 	mLabel -> setFrameStyle (
-		QFrame::Box|QFrame::Plain
+		QFrame::Box | QFrame::Plain
 	);
-	mLabel -> setPaletteBackgroundColor(
-		QColor( 250,250,210 )
-	);
+	QPalette pal = mLabel -> palette();
+	pal.setColor( QPalette::Window, QColor(250,250,210) );
+	mLabel -> setPalette (pal);
 	mLabel -> setLineWidth ( 1 );
 	layer1 -> addWidget ( mLabel );
+	layer1 -> setMargin (0);
 	mFolder = folder;
 	mTimer = new QTimer ( this );
 	connect (
@@ -61,7 +68,7 @@ void ClientInfo::setTip (const QString& newmail,const QString& curmail) {
 		QString allmail;
 		allmail.sprintf ("%d",allcount);
 		QString text;
-		QTextOStream (&text)
+		QTextStream (&text)
 			<< "<table border=0 cellspacing=0>"
 			<< "<tr>"
 			<< "<th rowspan=2><img src=\"" << PIXINFO << "\"></th>"
@@ -75,7 +82,7 @@ void ClientInfo::setTip (const QString& newmail,const QString& curmail) {
 		mLabel -> setText ( text );
 		QFontMetrics metrics ( font() );
 		show();
-		mTimer -> start ( 2000, true );
+		mTimer -> start ( 2000 );
 	}
 }
 
@@ -90,10 +97,12 @@ void ClientInfo::showEvent ( QShowEvent* ) {
 		xo = parent->x() + (parent->width()  / 2);
 		yo = parent->y() - (parent->height() / 2) - (height() / 2) - 10;
 	}
-	if (qApp->mainWidget()) {
+	QWidgetList list = QApplication::topLevelWidgets();
+	QWidget* mainWidget = list.at(0);
+	if (mainWidget) {
 		move ( 
-			qApp->mainWidget()->x() + xo, 
-			qApp->mainWidget()->y() + yo
+			mainWidget->x() + xo, 
+			mainWidget->y() + yo
 		);
 	}
 }

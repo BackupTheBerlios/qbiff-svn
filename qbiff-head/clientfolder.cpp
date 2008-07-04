@@ -17,18 +17,37 @@ STATUS        : Status: Beta
 #include "clientfolder.h"
 
 //=========================================
+// Globals
+//-----------------------------------------
+extern QString mailClient;
+extern QString mailPrivate;
+extern QString PIXINFO; 
+extern QString PIXPUBL;
+extern QString PIXPRIV;
+extern QString myFolder;
+
+//=========================================
 // Constructor
 //-----------------------------------------
-ClientFolder::ClientFolder (WFlags wflags) : QWidget (0,0,wflags)  {
+ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 	mButtonBar  = new QHBoxLayout ( this );
 	mPrivatePixmap = QPixmap ( PIXPRIV );
 	mPublicsPixmap = QPixmap ( PIXPUBL );
 	mPrivate = new QPushButton ( this );
-	mPrivate -> setToggleButton  ( true );
-	mPrivate -> setPixmap ( mPublicsPixmap );
-	mPrivate -> setPaletteBackgroundColor ( QColor(80,0,0) );
-	mPrivate -> setFocusPolicy (NoFocus);
+	mPrivate -> setCheckable ( true );
+	mPrivate -> setIcon(QIcon(mPublicsPixmap));
+	mPrivate -> setIconSize(mPublicsPixmap.size());
+	mPDefault = mPrivate -> palette();
+	mPBlue = mPDefault;
+	mPBlue.setColor( QPalette::Button, QColor(0,0,128));
+	mPBlue.setColor( QPalette::ButtonText, QColor(255,255,255));
+	mPGreen = mPDefault;
+	mPGreen.setColor( QPalette::Button, QColor(0,128,0));
+	mPGreen.setColor( QPalette::ButtonText, QColor(255,255,255));
+	mPrivate -> setFocusPolicy (Qt::NoFocus);
 	mButtonBar -> addWidget ( mPrivate );
+	mButtonBar -> setSpacing (2);
+	mButtonBar -> setMargin (0);
 	mIsPrivate = false;
 	connect (
 		mPrivate , SIGNAL (toggled    ( bool )),
@@ -45,16 +64,16 @@ ClientFolder::ClientFolder (WFlags wflags) : QWidget (0,0,wflags)  {
 		this   , SLOT   (timerDone (void))
 	);
 	mClient -> writeClient ("INIT");
-	mTimer  -> start ( 10, FALSE );
+	mTimer  -> start ( 10 );
 }
 
 //=========================================
 // gotLine
 //-----------------------------------------
 void ClientFolder::gotLine ( QString line ) {
-	QStringList tokens = QStringList::split (":",
-		QString::fromLocal8Bit(line)
-	);
+	QStringList tokens = QString::fromLocal8Bit(
+		line.toLatin1().data()
+	).split(":");
 	QString folder = tokens[0];
 	QString status = tokens[1];
 	QString newmail= tokens[2];
@@ -62,12 +81,11 @@ void ClientFolder::gotLine ( QString line ) {
 	if (folder.isEmpty()) {
 		return;
 	}
-	if (! mButton[folder]) {
+	if (! mButton.contains(folder)) {
 		Button* btn = new Button (folder,this);
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
-		btn->setPaletteBackgroundColor ( QColor(0,0,128) );
-		btn->setPaletteForegroundColor ( QColor(255,255,255));
-		btn->setFocusPolicy (NoFocus);
+		btn->setPalette (mPBlue);
+		btn->setFocusPolicy (Qt::NoFocus);
 		btn->setTip (newmail,curmail);
 		btn->setFixedHeight (mPrivate->height());
 		QObject::connect (
@@ -78,10 +96,10 @@ void ClientFolder::gotLine ( QString line ) {
 		btn->setHidden (false);
 		mButton.insert (folder,btn);
 		mInfo.insert (folder,info);
-		mFolderNames.append (folder);
+		mFolderNames.append (folder.toLatin1().data());
 
 		if ( status == "new" ) {
-			btn->setPaletteBackgroundColor( QColor(0,128,0) );
+			btn->setPalette (mPGreen);
 		}
 		if ( status == "empty" ) {
 			btn->setHidden (true);
@@ -89,14 +107,16 @@ void ClientFolder::gotLine ( QString line ) {
 	} else {
 		if ( status == "new" ) {
 			mButton[folder]->setHidden (false);
-			mButton[folder]->setPaletteBackgroundColor( QColor(0,128,0) );
+			mButton[folder]->setPalette (mPDefault);
+			mButton[folder]->setPalette (mPGreen);
 		}
 		if ( status == "empty" ) {
 			mButton[folder]->setHidden (true);
 		}
 		if ( status == "uptodate" ) {
 			mButton[folder]->setHidden (false);
-			mButton[folder]->setPaletteBackgroundColor( QColor(0,0,128) );
+			mButton[folder]->setPalette (mPDefault);
+			mButton[folder]->setPalette (mPBlue);
 		}
 		mButton[folder]->setTip (newmail,curmail);
 		mInfo[folder]->setTip (newmail,curmail);
@@ -112,19 +132,21 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 	QString text = btn->text();
 	if (mRemoteMail) {
 		QString servercmd;
-		QTextOStream(&servercmd) << "WRITE " << text;
+		QTextStream(&servercmd) << "WRITE " << text;
 		mClient -> writeClient (servercmd);
 	}
 	QProcess* proc = new QProcess();
+	QString program;
+	QStringList arguments;
 	if (mIsPrivate) {
-		proc->addArgument (MY_MAILCLPRIV);
+		program = mailPrivate;
 	} else {
-		proc->addArgument (MY_MAILCLIENT);
+		program = mailClient;
 	}
-	proc->addArgument (MY_FOLDER + text);
-	proc->start();
+	arguments <<  QString(myFolder + text);
+	proc->execute(program,arguments);
 	mProcessList.append (proc);
-	mButtonsList.append (btn);
+	mButtonsList.append ((Button*)btn);
 }
 
 //=========================================
@@ -153,20 +175,20 @@ void ClientFolder::timerDone (void) {
 	resize (sizeHint());
 	int pCount = 0;
 	int pRemove[mProcessList.count()];
-	QListIterator<QProcess> it (mProcessList);
-	for (; it.current();++it) {
+	QListIterator<QProcess*> it (mProcessList);
+	while (it.hasNext()) {
 		pRemove[pCount] = 0;
-		QProcess *proc = it.current();
-		if (! proc->isRunning()) {
+		QProcess *proc = it.next();
+		if (proc->state() != QProcess::Running) {
 			mButtonsList.at(pCount)->setDisabled (false);
 			pRemove[pCount] = 1;
 		}
 		pCount++;
 	}
-	for (unsigned int n=0;n<mProcessList.count();n++) {
+	for (int n=0;n<mProcessList.count();n++) {
 		if (pRemove[n] == 1) {
-			mButtonsList.remove (n);
-			mProcessList.remove (n);
+			mButtonsList.removeAt (n);
+			mProcessList.removeAt (n);
 		}
 	}
 }
@@ -184,10 +206,12 @@ void ClientFolder::cleanup (void) {
 //-----------------------------------------
 void ClientFolder::gotToggled (bool on) {
 	if (! on) {
-		mPrivate -> setPixmap ( mPublicsPixmap );
+		mPrivate -> setIcon (QIcon(mPublicsPixmap));
+		mPrivate -> setIconSize (mPublicsPixmap.size());
 		mIsPrivate = false;
 	} else {
-		mPrivate -> setPixmap ( mPrivatePixmap );
+		mPrivate -> setIcon(QIcon(mPrivatePixmap));
+		mPrivate -> setIconSize(mPrivatePixmap.size());
 		mIsPrivate = true;
 	}
 }

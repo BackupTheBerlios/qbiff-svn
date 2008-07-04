@@ -18,18 +18,21 @@ STATUS        : Status: Beta
 //=========================================
 // Globals...
 //-----------------------------------------
-extern QList<SSLServerConnection> mSSLConnections;
+extern QList<SSLServerConnection*> mSSLConnections;
+extern QString CAFILE;
+extern QString SERVER_CERTFILE;
+extern int serverPort;
 
 //=========================================
 // Constructor...
 //-----------------------------------------
 SSLServerInit::SSLServerInit ( QObject* parent ) : SSLCommon ( parent ) {
 	QString* port = new QString;
-	QTextOStream (port) << PORT;
+	QTextStream (port) << serverPort;
 	init_OpenSSL ();
 	seed_prng ();
 	setupServerCTX ();
-	acc = BIO_new_accept ((char*)port->ascii());
+	acc = BIO_new_accept ((char*)port->toLatin1().data());
 	if (!acc) {
 		qerror("Error creating server socket");
 	}
@@ -76,18 +79,23 @@ void SSLServerInit::openConnection (void) {
 //-----------------------------------------
 void SSLServerInit::setupServerCTX ( void ) {
 	ctx = SSL_CTX_new(SSLv23_method(  ));
-	if (SSL_CTX_load_verify_locations(ctx, CAFILE, CADIR) != 1) {
+	SSL_CTX_set_default_passwd_cb (ctx, passwd_cb);
+	if (SSL_CTX_load_verify_locations(
+		ctx, CAFILE.toLatin1().data(), CADIR) != 1
+	) {
 		qerror("Error loading CA file and/or directory");
 	}
 	if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
 		qerror("Error loading default CA file and/or directory");
 	}
-	if (SSL_CTX_use_certificate_chain_file(ctx, SERVER_CERTFILE) != 1) {
+	if (SSL_CTX_use_certificate_chain_file(
+		ctx, SERVER_CERTFILE.toLatin1().data()) != 1
+	) {
 		qerror("Error loading certificate from file");
 	}
-	if (
-		SSL_CTX_use_PrivateKey_file (ctx,SERVER_CERTFILE,SSL_FILETYPE_PEM) != 1
-	) {
+	if (SSL_CTX_use_PrivateKey_file (
+		ctx,SERVER_CERTFILE.toLatin1().data(),SSL_FILETYPE_PEM
+	) != 1) {
 		qerror("Error loading private key from file");
 	}
 	SSL_CTX_set_verify (
@@ -108,9 +116,9 @@ void SSLServerInit::setupServerCTX ( void ) {
 // Write data to all connections...
 //-----------------------------------------
 void SSLServerInit::writeClient ( const QString & data ) {
-	QListIterator<SSLServerConnection> io (mSSLConnections);
-	for (; io.current(); ++io) {
-		SSLServerConnection* connection = io.current();
+	QListIterator<SSLServerConnection*> io (mSSLConnections);
+	while (io.hasNext()) {
+		SSLServerConnection* connection = (SSLServerConnection*)io.next();
 		connection -> writeClient ( data );
 	}
 }
@@ -126,9 +134,9 @@ void SSLServerInit::initClientInit ( void ) {
 // free SSL context...
 //-----------------------------------------
 void SSLServerInit::SSLFree ( void ) {
-	QListIterator<SSLServerConnection> io (mSSLConnections);
-	for (; io.current(); ++io) {
-		SSLServerConnection* connection = io.current();
+	QListIterator<SSLServerConnection*> io (mSSLConnections);
+	while (io.hasNext()) {
+		SSLServerConnection* connection = (SSLServerConnection*)io.next();
 		connection -> shutdown ();
 	}
 	BIO_free (acc);

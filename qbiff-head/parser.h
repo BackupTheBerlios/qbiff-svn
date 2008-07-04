@@ -17,6 +17,8 @@ STATUS        : Status: Beta
 
 #include <qfile.h>
 #include <qlist.h>
+#include <qiodevice.h>
+#include <qtextstream.h>
 
 //=========================================
 // Defines...
@@ -29,13 +31,13 @@ STATUS        : Status: Beta
 class Parser {
 	private:
 	QFile* mFile;
-	QList<char> mList;
+	QList<char*> mList;
 
 	public:
 	Parser ( const QString & );
 
 	public:
-	QList<char> folderList (void);
+	QList<char*> folderList (void);
 };
 
 #endif

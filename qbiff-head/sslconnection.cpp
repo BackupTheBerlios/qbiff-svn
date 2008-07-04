@@ -18,7 +18,7 @@ STATUS        : Status: Beta
 //=========================================
 // Globals...
 //-----------------------------------------
-extern QList<SSLServerConnection> mSSLConnections;
+extern QList<SSLServerConnection*> mSSLConnections;
 
 //=========================================
 // Constructor...
@@ -61,7 +61,7 @@ void SSLServerConnection::run ( void ) {
 		SSL_clear (ssl);
 	}
 	printf ("SSL Connection closed\n");
-	mSSLConnections.remove (this);
+	mSSLConnections.removeAll (this);
 	SSL_free (ssl);
 	ERR_remove_state (0);
 	exit();
@@ -96,16 +96,16 @@ int SSLServerConnection::readClient ( void ) {
 			break;
 		}
 		if (buf[0] == '\n') {
-			line = line.simplifyWhiteSpace();
-			QStringList tokens = QStringList::split (" ", line);
+			line = line.simplified();
+			QStringList tokens = line.split (" ");
 			if ( tokens[0] == "INIT" ) {
 				clientInit();
 			}
 			if ( tokens[0] == "WRITE" ) {
-			if (tokens[1]) {
+			if ( ! tokens[1].isEmpty() ) {
 				QString sshfile = "/tmp/isny_" + tokens[1];
 				QFile sshflag (sshfile);
-				if (sshflag.open( IO_WriteOnly ) ) {
+				if (sshflag.open( QIODevice::WriteOnly ) ) {
 					sshflag.close();
 				}
 			}
@@ -135,7 +135,7 @@ void SSLServerConnection::writeClient ( const QString & data ) {
 	QString stream (data + "\n");
 	char buf[stream.length()+1];
 	memset (&buf, '\0', sizeof(buf));
-	strncpy (buf,stream.data(),stream.length());
+	strncpy (buf,stream.toLatin1().data(),stream.length());
 	for (unsigned int nwritten = 0;nwritten < sizeof(buf);nwritten+=err) {
 		err = SSL_write(ssl,buf + nwritten, sizeof(buf) - nwritten);
 		switch (SSL_get_error(ssl,err)) {

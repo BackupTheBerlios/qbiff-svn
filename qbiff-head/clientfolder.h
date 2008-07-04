@@ -20,12 +20,12 @@ STATUS        : Status: Beta
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qprocess.h>
-#include <qhbox.h>
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qtimer.h>
-#include <qdict.h>
+#include <qhash.h>
 #include <qthread.h>
+#include <qtextstream.h>
 #include <signal.h>
 
 #include "button.h"
@@ -40,7 +40,7 @@ class ClientFolder : public QWidget {
 	Q_OBJECT
 
 	public:
-	ClientFolder ( WFlags = 0 );
+	ClientFolder ( Qt::WindowFlags = 0 );
 	void setRemoteMail  (bool);
 	void setToggle      (bool);
 	void cleanup (void);
@@ -52,19 +52,22 @@ class ClientFolder : public QWidget {
 	void gotToggled     (bool);
 
 	private:
-	QTimer*             mTimer;
-	SSLClient*          mClient;
-	QPushButton*        mPrivate;
-	QPixmap             mPublicsPixmap;
-	QPixmap             mPrivatePixmap;
-	QBoxLayout*         mButtonBar;
-	QDict<Button>       mButton;
-	QDict<ClientInfo>   mInfo;
-	QList<char>         mFolderNames;
-	QList<QProcess>     mProcessList;
-	QList<QButton>      mButtonsList;
-	bool                mRemoteMail;
-	bool                mIsPrivate;
+	QPalette                   mPDefault;
+	QPalette                   mPBlue;
+	QPalette                   mPGreen;
+	QTimer*                    mTimer;
+	SSLClient*                 mClient;
+	QPushButton*               mPrivate;
+	QPixmap                    mPublicsPixmap;
+	QPixmap                    mPrivatePixmap;
+	QBoxLayout*                mButtonBar;
+	QHash<QString,Button*>     mButton;
+	QHash<QString,ClientInfo*> mInfo;
+	QList<char*>               mFolderNames;
+	QList<QProcess*>           mProcessList;
+	QList<Button*>             mButtonsList;
+	bool                       mRemoteMail;
+	bool                       mIsPrivate;
 };
 
 #endif

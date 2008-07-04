@@ -21,7 +21,7 @@ STATUS        : Status: Beta
 #include <qregexp.h>
 #include <qtextstream.h>
 #include <qfile.h>
-#include <qdict.h>
+#include <qhash.h>
 #include <signal.h>
 #include <qobject.h>
 #include <qthread.h>
@@ -31,7 +31,7 @@ STATUS        : Status: Beta
 //=========================================
 // Class SSLServerConnection
 //-----------------------------------------
-class SSLServerConnection : public SSLCommon, public QThread {
+class SSLServerConnection : public QThread {
 	Q_OBJECT
 
 	private:

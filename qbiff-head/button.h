@@ -25,6 +25,7 @@ STATUS        : Status: Beta
 #include <qevent.h>
 #include <qtimer.h>
 #include <qnamespace.h>
+#include <qtextstream.h>
 #include <X11/extensions/XTest.h>
 
 #include "config.h"
@@ -46,7 +47,7 @@ class Button : public QPushButton {
 	QString tipText (const QString &,const QString &);
 
 	public:
-	Button( const QString &, QWidget*, const char* =0 );
+	Button( const QString &, QWidget* );
 	void setTip (const QString &,const QString &);
 
 	private slots:

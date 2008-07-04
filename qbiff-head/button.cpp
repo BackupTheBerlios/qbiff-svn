@@ -16,18 +16,23 @@ STATUS        : Status: Beta
 #include "button.h"
 
 //=========================================
+// Globals...
+//-----------------------------------------
+extern QString PIXINFO; 
+
+//=========================================
 // Constructor
 //-----------------------------------------
 Button::Button(
-	const QString &text, QWidget*parent, const char*name
-): QPushButton (text,parent,name) {
+	const QString &text, QWidget*parent 
+): QPushButton (text,parent) {
 	QObject::connect (
 		this , SIGNAL ( clicked     (void) ),
 		this,  SLOT   ( slotClicked (void) )
 	);
 	mFolder = text;
 	//setFont (QFont ("Dejavu Sans", 10, QFont::Normal));
-	setFont (QFont ("FrutigerNextLT", 10, QFont::Normal));
+	setFont (QFont ("FrutigerNextLT:style=Bold", 8, QFont::Bold));
 	mLastNewCount = 0;
 }
 
@@ -41,7 +46,7 @@ QString Button::tipText (const QString& newmail,const QString& curmail) {
 	QString allmail;
 	allmail.sprintf ("%d",allcount);
 	QString text;
-	QTextOStream (&text)
+	QTextStream (&text)
 		<< "<table border=0 cellspacing=0>"
 		<< "<tr>"
 		<< "<th rowspan=2><img src=\"" << PIXINFO << "\"></th>"
@@ -60,7 +65,7 @@ QString Button::tipText (const QString& newmail,const QString& curmail) {
 //-----------------------------------------
 void Button::setTip (const QString& newmail,const QString& curmail) {
 	QString text = tipText (newmail,curmail);
-	QToolTip::add (this,text);
+	setToolTip (text);
 }
 
 //=========================================
