@@ -114,8 +114,7 @@ void Notify::init ( bool clean ) {
 				int start = FDcount;
 				int ended = FDcount + 4;
 				for (int n=start;n<ended;n++) {
-					int fd = mFDs.at(n);
-					mNotifyCount.insert ( fd, dirCount );
+					mNotifyCount.insert ( mFDs[n], dirCount );
 				}
 				FDcount = ended;
 				NotifyCount* initial = new NotifyCount (
@@ -172,17 +171,15 @@ void Notify::activateFolderNotification (
 		mNotifyDirs.insert (
 			fd, folder
 		);
-		mFDs.append (fd);
+		mFDs << fd;
 	}
 }
 
 //=========================================
-// 
+// cleanActiveFolderNotification
 //-----------------------------------------
 void Notify::cleanActiveFolderNotification (void) {
-	QListIterator<int> fd ( mFDs );
-	while (fd.hasNext()) {
-		int value = fd.next();
+	for (int value = 0; value < mFDs.size(); value++) {
 		fcntl (value, F_NOTIFY, 0);
 		fcntl (value, F_SETSIG, 0);
 		close (value);

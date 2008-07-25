@@ -33,7 +33,7 @@ Parser::Parser ( const QString & file ) {
 		if ((line->at(0) == '#') || (line->isEmpty())) {
 			continue;
 		}
-		char* name = (char*)malloc(sizeof(char)*line->length());
+		char* name = (char*)malloc(sizeof(char)*line->length()+1);
 		strcpy (name,line->toLatin1().data());
 		mList.append (name);
 	}

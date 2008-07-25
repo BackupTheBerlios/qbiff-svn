@@ -70,7 +70,7 @@ class Notify : public QObject {
 	QTimer*  mTimer;
 	QList<NotifyCount*> mInitialFolderList;
 	QHash<int,int> mNotifyQueue;
-	QList<int> mFDs;
+	QVector<int> mFDs;
 	Parser* mParse;
 
 	public:
