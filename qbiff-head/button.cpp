@@ -18,7 +18,8 @@ STATUS        : Status: Beta
 //=========================================
 // Globals...
 //-----------------------------------------
-extern QString PIXINFO; 
+extern QString PIXNEWMAIL;
+extern QString PIXNOMAIL; 
 
 //=========================================
 // Constructor
@@ -32,7 +33,7 @@ Button::Button(
 	);
 	mFolder = text;
 	//setFont (QFont ("Dejavu Sans", 10, QFont::Normal));
-	setFont (QFont ("FrutigerNextLT:style=Bold", 8, QFont::Bold));
+	setFont (QFont ("FrutigerNextLT:style=Bold", 10, QFont::Bold));
 	mLastNewCount = 0;
 }
 
@@ -46,8 +47,12 @@ QString Button::tipText (const QString& newmail,const QString& curmail) {
 	QString allmail;
 	allmail.sprintf ("%d",allcount);
 	QString text;
+	QString PIXINFO = PIXNEWMAIL;
+	if (newcount == 0) {
+		PIXINFO = PIXNOMAIL;
+	}
 	QTextStream (&text)
-		<< "<table border=0 cellspacing=0>"
+		<< "<table border=0 cellspacing=4 width=300>"
 		<< "<tr>"
 		<< "<th rowspan=2><img src=\"" << PIXINFO << "\"></th>"
 		<< "<td><nobr>Folder: <b>" << mFolder 

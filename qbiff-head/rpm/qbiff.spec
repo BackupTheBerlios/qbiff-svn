@@ -72,7 +72,8 @@ install -m 755 qbiff-client        $RPM_BUILD_ROOT/usr/bin
 install -m 755 qbiff-server        $RPM_BUILD_ROOT/usr/bin
 install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail
 install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail.private
-install -m 644 pixmaps/tooltip.xpm $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/newmail.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/nomail.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/private.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/public.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 

@@ -5,7 +5,6 @@ logname=`whoami`
 hostname=10.10.0.1
 
 #-fn "-misc-console-medium-r-normal--16-160-72-72-c-80-iso10646-1"
-xterm -bg black -fg white -geom 80x55 +sb \
-	-fn "7x13bold" \
+xterm -bg black -fg white -geom 80x55 +sb -fn "7x13bold" \
 	-T $title -e ssh -t -C -l $logname $hostname \
 	PATH=$PATH LANG=$LANG mutt -f $1

@@ -18,7 +18,8 @@ STATUS        : Status: Beta
 //============================================
 // Globals...
 //--------------------------------------------
-extern QString PIXINFO; 
+extern QString PIXNEWMAIL; 
+extern QString PIXNOMAIL;
 extern QString PIXPUBL;
 extern QString PIXPRIV;
 
@@ -69,9 +70,9 @@ void ClientInfo::setTip (const QString& newmail,const QString& curmail) {
 		allmail.sprintf ("%d",allcount);
 		QString text;
 		QTextStream (&text)
-			<< "<table border=0 cellspacing=0>"
+			<< "<table border=0 cellspacing=4 width=300>"
 			<< "<tr>"
-			<< "<th rowspan=2><img src=\"" << PIXINFO << "\"></th>"
+			<< "<th rowspan=2><img src=\"" << PIXNEWMAIL << "\"></th>"
 			<< "<td><nobr>Folder: <b>" << mFolder
 			<< " : " << newmail << "</b> new Mail(s)</nobr></td>"
 			<< "</tr>"

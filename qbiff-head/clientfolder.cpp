@@ -21,7 +21,6 @@ STATUS        : Status: Beta
 //-----------------------------------------
 extern QString mailClient;
 extern QString mailPrivate;
-extern QString PIXINFO; 
 extern QString PIXPUBL;
 extern QString PIXPRIV;
 extern QString myFolder;
@@ -37,16 +36,20 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 	mPrivate -> setCheckable ( true );
 	mPrivate -> setIcon(QIcon(mPublicsPixmap));
 	mPrivate -> setIconSize(mPublicsPixmap.size());
+	mPrivate -> setFixedWidth (mPublicsPixmap.width() + 20);
 	mPDefault = mPrivate -> palette();
 	mPBlue = mPDefault;
-	mPBlue.setColor( QPalette::Button, QColor(0,0,128));
+	mPBlue.setColor( QPalette::Button, QColor(60,60,153));
 	mPBlue.setColor( QPalette::ButtonText, QColor(255,255,255));
 	mPGreen = mPDefault;
-	mPGreen.setColor( QPalette::Button, QColor(0,128,0));
+	mPGreen.setColor( QPalette::Button, QColor(75,164,75));
 	mPGreen.setColor( QPalette::ButtonText, QColor(255,255,255));
+	mPRed = mPDefault;
+	mPRed.setColor( QPalette::Button, QColor(145,92,92));
 	mPrivate -> setFocusPolicy (Qt::NoFocus);
+	mPrivate -> setPalette (mPRed);
 	mButtonBar -> addWidget ( mPrivate );
-	mButtonBar -> setSpacing (2);
+	mButtonBar -> setSpacing (0);
 	mButtonBar -> setMargin (0);
 	mIsPrivate = false;
 	connect (
@@ -144,7 +147,10 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 		program = mailClient;
 	}
 	arguments <<  QString(myFolder + text);
-	proc->execute(program,arguments);
+	//printf ("%s %s\n",
+	//	program.toLatin1().data(),arguments.join(":").toLatin1().data()
+	//);
+	proc->execute (program,arguments);
 	mProcessList.append (proc);
 	mButtonsList.append ((Button*)btn);
 }

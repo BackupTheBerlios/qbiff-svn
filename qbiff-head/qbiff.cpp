@@ -49,7 +49,8 @@ QString DH1024;
 QString DH512;
 QString SERVER_CERTFILE;
 QString CLIENT_CERTFILE;
-QString PIXINFO;
+QString PIXNEWMAIL;
+QString PIXNOMAIL;
 QString PIXPUBL;
 QString PIXPRIV;
 
@@ -171,7 +172,8 @@ int main(int argc,char*argv[]) {
 	DH512          = baseDir + "/cert-server/dh512.pem";
 	SERVER_CERTFILE= baseDir + "/cert-server/server.pem";
 	CLIENT_CERTFILE= baseDir + "/cert-client/client.pem";
-	PIXINFO        = baseDir + "/pixmaps/tooltip.xpm";
+	PIXNEWMAIL     = baseDir + "/pixmaps/newmail.png";
+	PIXNOMAIL      = baseDir + "/pixmaps/nomail.png";
 	PIXPUBL        = baseDir + "/pixmaps/public.png";
 	PIXPRIV        = baseDir + "/pixmaps/private.png";
 
@@ -208,11 +210,9 @@ int main(int argc,char*argv[]) {
 		Qt::WFlags wflags = Qt::Window;
 		wflags |= Qt::FramelessWindowHint;
 		pFolder = new ClientFolder ( wflags );
-		//pFolder -> setFixedHeight(0);
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
-		//app.setMainWidget ( pFolder );
-		pFolder-> show ();
+		pFolder -> show ();
 	}
 	return app.exec();
 }

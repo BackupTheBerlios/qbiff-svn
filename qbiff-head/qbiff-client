@@ -5,7 +5,7 @@ if [ ! -x $ASK ];then
 	ASK=/usr/lib64/ssh/x11-ssh-askpass
 fi
 if [ -x ./qbiff ];then
-	$ASK | ./qbiff -geometry +0-1 $@
+	$ASK | ./qbiff $@
 else
-	$ASK | qbiff -geometry +0-1 $@
+	$ASK | qbiff $@
 fi

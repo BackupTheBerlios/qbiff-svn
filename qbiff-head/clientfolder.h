@@ -53,6 +53,7 @@ class ClientFolder : public QWidget {
 
 	private:
 	QPalette                   mPDefault;
+	QPalette                   mPRed;
 	QPalette                   mPBlue;
 	QPalette                   mPGreen;
 	QTimer*                    mTimer;
