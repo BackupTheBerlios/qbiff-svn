@@ -40,6 +40,7 @@ ClientInfo::ClientInfo (
 	QPalette pal = mLabel -> palette();
 	pal.setColor( QPalette::Window, QColor(250,250,210) );
 	mLabel -> setPalette (pal);
+	mLabel -> setAutoFillBackground (true);
 	mLabel -> setLineWidth ( 1 );
 	layer1 -> addWidget ( mLabel );
 	layer1 -> setMargin (0);
