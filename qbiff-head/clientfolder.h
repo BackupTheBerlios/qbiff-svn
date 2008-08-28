@@ -49,6 +49,7 @@ class ClientFolder : public QWidget {
 	void gotLine        (QString);
 	void folderEvent    (QPushButton*);
 	void timerDone      (void);
+	void timerProcDone  (void);
 	void gotToggled     (bool);
 
 	private:
@@ -57,6 +58,7 @@ class ClientFolder : public QWidget {
 	QPalette                   mPBlue;
 	QPalette                   mPGreen;
 	QTimer*                    mTimer;
+	QTimer*                    mTimerProc;
 	SSLClient*                 mClient;
 	QPushButton*               mPrivate;
 	QPixmap                    mPublicsPixmap;

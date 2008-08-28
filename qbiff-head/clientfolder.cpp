@@ -57,6 +57,7 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 		this     , SLOT   (gotToggled ( bool ))
 	);
 	mTimer      = new QTimer ( this );
+	mTimerProc  = new QTimer ( this );
 	mClient     = new SSLClient;
 	connect (
         mClient , SIGNAL (gotLine ( QString )),
@@ -66,8 +67,13 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 		mTimer , SIGNAL (timeout   (void)),
 		this   , SLOT   (timerDone (void))
 	);
+	connect (
+		mTimerProc, SIGNAL (timeout       (void)),
+		this      , SLOT   (timerProcDone (void))
+	);
 	mClient -> writeClient ("INIT");
 	mTimer  -> start ( 10 );
+	mTimerProc -> start ( 10 );
 }
 
 //=========================================
@@ -150,7 +156,7 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 	//printf ("%s %s\n",
 	//	program.toLatin1().data(),arguments.join(":").toLatin1().data()
 	//);
-	proc->execute (program,arguments);
+	proc->start (program,arguments);
 	mProcessList.append (proc);
 	mButtonsList.append ((Button*)btn);
 }
@@ -179,13 +185,19 @@ void ClientFolder::setToggle ( bool toggle ) {
 void ClientFolder::timerDone (void) {
 	mClient -> clientReadWrite ();
 	resize (sizeHint());
+}
+
+//=========================================
+// timerProcDone
+//-----------------------------------------
+void ClientFolder::timerProcDone (void) {
 	int pCount = 0;
 	int pRemove[mProcessList.count()];
 	QListIterator<QProcess*> it (mProcessList);
 	while (it.hasNext()) {
 		pRemove[pCount] = 0;
 		QProcess *proc = it.next();
-		if (proc->state() != QProcess::Running) {
+		if (proc->pid() == 0) {
 			mButtonsList.at(pCount)->setDisabled (false);
 			pRemove[pCount] = 1;
 		}
@@ -204,6 +216,7 @@ void ClientFolder::timerDone (void) {
 //-----------------------------------------
 void ClientFolder::cleanup (void) {
 	mTimer  -> stop();
+	mTimerProc -> stop();
 	mClient -> writeClient ("QUIT");
 }
 

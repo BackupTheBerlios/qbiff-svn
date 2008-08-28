@@ -49,6 +49,8 @@ QString DH1024;
 QString DH512;
 QString SERVER_CERTFILE;
 QString CLIENT_CERTFILE;
+QString PIXSHAPE;
+QString PIXSHAPEBG;
 QString PIXNEWMAIL;
 QString PIXNOMAIL;
 QString PIXPUBL;
@@ -172,6 +174,8 @@ int main(int argc,char*argv[]) {
 	DH512          = baseDir + "/cert-server/dh512.pem";
 	SERVER_CERTFILE= baseDir + "/cert-server/server.pem";
 	CLIENT_CERTFILE= baseDir + "/cert-client/client.pem";
+	PIXSHAPE       = baseDir + "/pixmaps/shape.xpm";
+	PIXSHAPEBG     = baseDir + "/pixmaps/shape.png";
 	PIXNEWMAIL     = baseDir + "/pixmaps/newmail.png";
 	PIXNOMAIL      = baseDir + "/pixmaps/nomail.png";
 	PIXPUBL        = baseDir + "/pixmaps/public.png";
@@ -212,6 +216,7 @@ int main(int argc,char*argv[]) {
 		pFolder = new ClientFolder ( wflags );
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
+		pFolder -> setGeometry (0,0,0,0);
 		pFolder -> show ();
 	}
 	return app.exec();

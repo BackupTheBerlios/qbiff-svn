@@ -32,6 +32,7 @@ class ClientInfo : public QWidget {
 	Q_OBJECT
 
 	private:
+	QPixmap  mShape;
 	QLabel*  mLabel;
 	QString  mFolder;
 	QTimer*  mTimer;
@@ -48,7 +49,7 @@ class ClientInfo : public QWidget {
 
 	protected:
 	virtual void showEvent   ( QShowEvent * );
-
+	
 	private slots:
 	void timerDone (void);
 };
