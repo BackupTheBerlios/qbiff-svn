@@ -73,6 +73,7 @@ bool Button::eventFilter ( QObject*, QEvent* event ) {
 		break;
 		case QEvent::HoverLeave:
 			mTimer->stop();
+			hideTip (this);
 		break;
 		default:
 		break;

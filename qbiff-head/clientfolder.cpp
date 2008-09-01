@@ -104,6 +104,10 @@ void ClientFolder::gotLine ( QString line ) {
 			btn , SIGNAL ( showTip (QPushButton*) ),
 			this, SLOT   ( showTip (QPushButton*) )
 		);
+		QObject::connect (
+			btn , SIGNAL ( hideTip (QPushButton*) ),
+			this, SLOT   ( hideTip (QPushButton*) )
+		);
 		mButtonBar -> addWidget ( btn );
 		btn->setHidden (false);
 		mButton.insert (folder,btn);
@@ -142,6 +146,14 @@ void ClientFolder::gotLine ( QString line ) {
 void ClientFolder::showTip (QPushButton* btn) {
 	QString folder = btn->text();
 	mInfo[folder]->showTip();
+}
+
+//=========================================
+// hideTip
+//-----------------------------------------
+void ClientFolder::hideTip (QPushButton* btn) {
+	QString folder = btn->text();
+	mInfo[folder]->hide();
 }
 
 //=========================================

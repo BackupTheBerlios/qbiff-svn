@@ -56,6 +56,7 @@ class Button : public QPushButton {
 	signals:
 	void clickedButton (QPushButton*);
 	void showTip (QPushButton*);
+	void hideTip (QPushButton*);
 };
 
 #endif

@@ -49,6 +49,7 @@ class ClientFolder : public QWidget {
 	void gotLine        (QString);
 	void folderEvent    (QPushButton*);
 	void showTip        (QPushButton*);
+	void hideTip        (QPushButton*);
 	void timerDone      (void);
 	void timerProcDone  (void);
 	void gotToggled     (bool);
