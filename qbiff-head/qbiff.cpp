@@ -40,6 +40,8 @@ QString mailClient     = MY_MAILCLIENT;
 QString mailPrivate    = MY_MAILCLPRIV;
 QString baseDir        = BASEDIR;
 QString myFolder       = MY_FOLDER;
+QString myButtonFont   = "FrutigerNextLT:style=Bold";
+int myButtonFontSize   = 10;
 
 //=========================================
 // Globals
@@ -99,16 +101,18 @@ int main(int argc,char*argv[]) {
 	int option_index = 0;
 	static struct option long_options[] =
 	{
-		{"remote"     , 0 , 0 , 'r'},
-		{"server"     , 1 , 0 , 's'},
-		{"port"       , 1 , 0 , 'p'},
-		{"mailfolder" , 1 , 0 , 'f'},
-		{"readmail"   , 1 , 0 , 'm'},
-		{"readpriv"   , 1 , 0 , 'i'},
-		{"basedir"    , 1 , 0 , 'b'},
-		{"toggle"     , 0 , 0 , 't'},
-		{"help"       , 0 , 0 , 'h'},
-		{0            , 0 , 0 , 0  }
+		{"remote"        , 0 , 0 , 'r'},
+		{"server"        , 1 , 0 , 's'},
+		{"port"          , 1 , 0 , 'p'},
+		{"mailfolder"    , 1 , 0 , 'f'},
+		{"buttonfont"    , 1 , 0 , 'F'},
+		{"buttonfontsize", 1 , 0 , 'Z'},
+		{"readmail"      , 1 , 0 , 'm'},
+		{"readpriv"      , 1 , 0 , 'i'},
+		{"basedir"       , 1 , 0 , 'b'},
+		{"toggle"        , 0 , 0 , 't'},
+		{"help"          , 0 , 0 , 'h'},
+		{0               , 0 , 0 , 0  }
 	};
 	int c = getopt_long (
 		argc, argv, "rhs:p:tf:m:i:b:",long_options, &option_index
@@ -136,6 +140,14 @@ int main(int argc,char*argv[]) {
 	case 'f':
 		myFolder = *(new QString (optarg));
 		myFolder += "/";
+	break;
+
+	case 'Z':
+		myButtonFontSize = (new QString (optarg))->toInt();
+	break;
+
+	case 'F':
+		myButtonFont = *(new QString (optarg));
 	break;
 
 	case 's':

@@ -20,6 +20,8 @@ STATUS        : Status: Beta
 //-----------------------------------------
 extern QString PIXNEWMAIL;
 extern QString PIXNOMAIL; 
+extern QString myButtonFont;
+extern int myButtonFontSize;
 
 //=========================================
 // Constructor
@@ -33,7 +35,7 @@ Button::Button(
 	);
 	mFolder = text;
 	//setFont (QFont ("Dejavu Sans", 10, QFont::Normal));
-	setFont (QFont ("FrutigerNextLT:style=Bold", 10, QFont::Bold));
+	setFont (QFont (myButtonFont, myButtonFontSize, QFont::Bold));
 	mLastNewCount = 0;
 	mTimer = new QTimer ( this );
 	connect (
