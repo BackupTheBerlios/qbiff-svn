@@ -174,8 +174,19 @@ int main(int argc,char*argv[]) {
 	DH512          = baseDir + "/cert-server/dh512.pem";
 	SERVER_CERTFILE= baseDir + "/cert-server/server.pem";
 	CLIENT_CERTFILE= baseDir + "/cert-client/client.pem";
+
+	// .../
+	// shape pixmap used to create the bitmask for the non
+	// rectangular info window
+	// ----
 	PIXSHAPE       = baseDir + "/pixmaps/shape.xpm";
-	PIXSHAPEBG     = baseDir + "/pixmaps/shape.png";
+	// .../
+	// background image set as QFrame stylesheet. Alternative
+	// shape.png.transparent can be used, which allows to set
+	// the background color within the C++ code
+	// ----
+	PIXSHAPEBG     = baseDir + "/pixmaps/shape.xpm"; 
+
 	PIXNEWMAIL     = baseDir + "/pixmaps/newmail.png";
 	PIXNOMAIL      = baseDir + "/pixmaps/nomail.png";
 	PIXPUBL        = baseDir + "/pixmaps/public.png";

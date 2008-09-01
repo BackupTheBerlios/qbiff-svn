@@ -76,6 +76,7 @@ install -m 644 pixmaps/newmail.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/nomail.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/private.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/public.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/shape.xpm   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 
 install -m 755 init.d/qbiff        $RPM_BUILD_ROOT/etc/init.d
 
