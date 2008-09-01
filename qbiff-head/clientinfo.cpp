@@ -32,8 +32,7 @@ extern QString PIXPRIV;
 // Constructor
 //--------------------------------------------
 ClientInfo::ClientInfo (
-	QString &folder, QWidget* parent, int newcount,
-	bool modal, Qt::WFlags f
+	QString &folder, QWidget* parent, int newcount, bool, Qt::WFlags
 ) : QWidget ( parent, Qt::Window | Qt::FramelessWindowHint ) {
 	mShape = QPixmap (PIXSHAPE);
 	QBoxLayout* layer1 = new QVBoxLayout ( this );
@@ -66,37 +65,54 @@ ClientInfo::ClientInfo (
 //============================================
 // set label text
 //--------------------------------------------
-void ClientInfo::setTip (const QString& newmail,const QString& curmail) {
-	bool showMe = true;
+void ClientInfo::setTip (
+	const QString& newmail,const QString& curmail, bool showMe
+) {
+	QString pix;
 	int newcount = newmail.toInt();
 	if (mNewMailCount >= newcount) {
 		showMe = false;
 	}
 	mNewMailCount = newcount;
+	if (mNewMailCount > 0) {
+		pix = PIXNEWMAIL;
+	} else {
+		pix = PIXNOMAIL;
+	}
+	int curcount = curmail.toInt();
+	int allcount = newcount + curcount;
+	QString allmail;
+	allmail.sprintf ("%d",allcount);
+	mTip = "";
+	QTextStream (&mTip)
+		<< "<table border=0 cellspacing=4 width=300>"
+		<< "<tr>"
+		<< "<td width=30></td>"
+		<< "<th rowspan=2><img src=\"" << pix << "\"></th>"
+		<< "<td><nobr><br>Folder: <b>" << mFolder
+		<< " : " << newmail << "</b> new Mail(s)</nobr></td>"
+		<< "</tr>"
+		<< "<tr>"
+		<< "<td width=30></td>"
+		<< "<td><hr>Counting <b>" << allmail << "</b> mails</td>"
+		<< "</tr>"
+		<< "</table>";
 	if (showMe) {
-		int curcount = curmail.toInt();
-		int allcount = newcount + curcount;
-		QString allmail;
-		allmail.sprintf ("%d",allcount);
-		QString text;
-		QTextStream (&text)
-			<< "<table border=0 cellspacing=4 width=300>"
-			<< "<tr>"
-			<< "<td width=30></td>"
-			<< "<th rowspan=2><img src=\"" << PIXNEWMAIL << "\"></th>"
-			<< "<td><nobr><br>Folder: <b>" << mFolder
-			<< " : " << newmail << "</b> new Mail(s)</nobr></td>"
-			<< "</tr>"
-			<< "<tr>"
-			<< "<td width=30></td>"
-			<< "<td><hr>Counting <b>" << allmail << "</b> mails</td>"
-			<< "</tr>"
-			<< "</table>";
-		mLabel -> setText ( text );
+		mLabel -> setText ( mTip );
 		QFontMetrics metrics ( font() );
 		show();
 		mTimer -> start ( 2000 );
 	}
+}
+
+//============================================
+// showTip
+//--------------------------------------------
+void ClientInfo::showTip (void) {
+	mLabel -> setText ( mTip );
+	QFontMetrics metrics ( font() );
+	show();
+	mTimer -> start ( 2000 );
 }
 
 //============================================
@@ -108,9 +124,9 @@ void ClientInfo::showEvent ( QShowEvent* ) {
 	int xo = main->x();
 	int yo = main->y();
 	int moveX = xo + parent->x();
-	int moveY = yo + parent->y() + (parent->height() / 2);
+	int moveY = yo + parent->y() + parent->height();
 	if (moveY + height() > qApp->desktop()->height()) {
-		moveY = yo - height() + (parent->height() / 2);
+		moveY = yo - height();
 	}
 	if (moveX + width() > qApp->desktop()->width()) {
 		moveX = xo - parent->x();

@@ -19,7 +19,6 @@ STATUS        : Status: Beta
 #include <qpushbutton.h>
 #include <qapplication.h>
 #include <qwidget.h>
-#include <qtooltip.h>
 #include <qwhatsthis.h>
 #include <qstring.h>
 #include <qevent.h>
@@ -42,19 +41,21 @@ class Button : public QPushButton {
 	private:
 	int      mLastNewCount;
 	QString  mFolder;
+	QTimer*  mTimer;
 
 	private:
-	QString tipText (const QString &,const QString &);
+	bool eventFilter ( QObject*, QEvent* );
 
 	public:
 	Button( const QString &, QWidget* );
-	void setTip (const QString &,const QString &);
 
 	private slots:
 	void slotClicked (void);
+	void timerDone   (void);
 
 	signals:
 	void clickedButton (QPushButton*);
+	void showTip (QPushButton*);
 };
 
 #endif

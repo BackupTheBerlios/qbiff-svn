@@ -35,42 +35,12 @@ Button::Button(
 	//setFont (QFont ("Dejavu Sans", 10, QFont::Normal));
 	setFont (QFont ("FrutigerNextLT:style=Bold", 10, QFont::Bold));
 	mLastNewCount = 0;
-}
-
-//=========================================
-// create info text
-//-----------------------------------------
-QString Button::tipText (const QString& newmail,const QString& curmail) {
-	int newcount = newmail.toInt();
-	int curcount = curmail.toInt();
-	int allcount = newcount + curcount;
-	QString allmail;
-	allmail.sprintf ("%d",allcount);
-	QString text;
-	QString PIXINFO = PIXNEWMAIL;
-	if (newcount == 0) {
-		PIXINFO = PIXNOMAIL;
-	}
-	QTextStream (&text)
-		<< "<table border=0 cellspacing=4 width=300>"
-		<< "<tr>"
-		<< "<th rowspan=2><img src=\"" << PIXINFO << "\"></th>"
-		<< "<td><nobr>Folder: <b>" << mFolder 
-		<< " : " << newmail << "</b> new Mail(s)</nobr></td>"
-		<< "</tr>"
-		<< "<tr>"
-		<< "<td><hr>Counting <b>" << allmail << "</b> mails</td>"
-		<< "</tr>"
-		<< "</table>";
-	return text;
-}
-
-//=========================================
-// set tooltip with mail count
-//-----------------------------------------
-void Button::setTip (const QString& newmail,const QString& curmail) {
-	QString text = tipText (newmail,curmail);
-	setToolTip (text);
+	mTimer = new QTimer ( this );
+	connect (
+		mTimer , SIGNAL (timeout   (void)),
+		this   , SLOT   (timerDone (void))
+	);
+	installEventFilter (this);
 }
 
 //=========================================
@@ -79,3 +49,34 @@ void Button::setTip (const QString& newmail,const QString& curmail) {
 void Button::slotClicked (void) {
 	clickedButton (this);
 }
+
+//=========================================
+// timerDone
+//-----------------------------------------
+void Button::timerDone (void) {
+	showTip(this);
+	mTimer->stop();
+}
+
+//=========================================
+// eventFilter
+//-----------------------------------------
+bool Button::eventFilter ( QObject*, QEvent* event ) {
+	QMouseEvent* mouse = (QMouseEvent*)event;
+	if (! mouse) {
+		return (false);
+	}
+	//printf ("%d\n",mouse->type());
+	switch (mouse->type()) {
+		case QEvent::HoverEnter:
+			mTimer->start(1000);
+		break;
+		case QEvent::HoverLeave:
+			mTimer->stop();
+		break;
+		default:
+		break;
+	}
+	return (false);
+}
+

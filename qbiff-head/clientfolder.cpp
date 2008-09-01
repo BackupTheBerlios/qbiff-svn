@@ -95,11 +95,14 @@ void ClientFolder::gotLine ( QString line ) {
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
 		btn->setPalette (mPBlue);
 		btn->setFocusPolicy (Qt::NoFocus);
-		btn->setTip (newmail,curmail);
 		btn->setFixedHeight (mPrivate->height());
 		QObject::connect (
 			btn , SIGNAL ( clickedButton (QPushButton*) ),
 			this, SLOT   ( folderEvent   (QPushButton*) )
+		);
+		QObject::connect (
+			btn , SIGNAL ( showTip (QPushButton*) ),
+			this, SLOT   ( showTip (QPushButton*) )
 		);
 		mButtonBar -> addWidget ( btn );
 		btn->setHidden (false);
@@ -113,6 +116,7 @@ void ClientFolder::gotLine ( QString line ) {
 		if ( status == "empty" ) {
 			btn->setHidden (true);
 		}
+		mInfo[folder]->setTip (newmail,curmail,false);
 	} else {
 		if ( status == "new" ) {
 			mButton[folder]->setHidden (false);
@@ -127,10 +131,17 @@ void ClientFolder::gotLine ( QString line ) {
 			mButton[folder]->setPalette (mPDefault);
 			mButton[folder]->setPalette (mPBlue);
 		}
-		mButton[folder]->setTip (newmail,curmail);
 		mInfo[folder]->setTip (newmail,curmail);
 	}
 	resize (sizeHint());
+}
+
+//=========================================
+// showTip
+//-----------------------------------------
+void ClientFolder::showTip (QPushButton* btn) {
+	QString folder = btn->text();
+	mInfo[folder]->showTip();
 }
 
 //=========================================

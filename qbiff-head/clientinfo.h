@@ -36,6 +36,7 @@ class ClientInfo : public QWidget {
 	QLabel*  mLabel;
 	QString  mFolder;
 	QTimer*  mTimer;
+	QString  mTip;
 	int      mNewMailCount;
 
 	public:
@@ -45,7 +46,8 @@ class ClientInfo : public QWidget {
 	);
 
 	public:
-	void setTip (const QString&,const QString&);
+	void setTip (const QString&,const QString&,bool=true);
+	void showTip (void);
 
 	protected:
 	virtual void showEvent   ( QShowEvent * );
