@@ -26,6 +26,7 @@ STATUS        : Status: Beta
 #include <qhash.h>
 #include <qthread.h>
 #include <qtextstream.h>
+#include <qdesktopwidget.h>
 #include <signal.h>
 
 #include "button.h"

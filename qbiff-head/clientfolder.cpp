@@ -74,6 +74,7 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 	mClient -> writeClient ("INIT");
 	mTimer  -> start ( 10 );
 	mTimerProc -> start ( 10 );
+	move (0,qApp->desktop()->height() - mPrivate->height());
 }
 
 //=========================================
