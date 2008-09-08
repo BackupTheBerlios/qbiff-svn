@@ -37,6 +37,8 @@ ClientInfo::ClientInfo (
 	mShape = QPixmap (PIXSHAPE);
 	QBoxLayout* layer1 = new QVBoxLayout ( this );
 	QFrame* shapeFrame = new QFrame (this);
+	#if QT_VERSION > 0x040100
+	// works only with Qt >= 4.2
 	QString style;
 	QTextStream (&style)
 		<< "border: 0px;"
@@ -45,6 +47,7 @@ ClientInfo::ClientInfo (
 		<< PIXSHAPEBG
 		<< ");";
 	shapeFrame -> setStyleSheet ( style );
+	#endif
 	shapeFrame -> setFixedWidth  (mShape.width());
 	shapeFrame -> setFixedHeight (mShape.height());
 	mLabel  = new QLabel ( shapeFrame );

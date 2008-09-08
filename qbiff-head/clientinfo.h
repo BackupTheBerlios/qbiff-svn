@@ -22,6 +22,7 @@ STATUS        : Status: Up-to-date
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qtextstream.h>
+#include <qpixmap.h>
 
 #include "config.h"
 
