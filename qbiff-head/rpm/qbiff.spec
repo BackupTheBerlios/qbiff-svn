@@ -140,8 +140,8 @@ install -m 644 cert-client/client.cnf \
 %dir /usr/share/qbiff
 /usr/bin/qbiff
 /usr/bin/qbiff-client
-/usr/share/qbiff/readmail
-/usr/share/qbiff/readmail.private
+%config /usr/share/qbiff/readmail
+%config /usr/share/qbiff/readmail.private
 /usr/share/qbiff/readmail.txt
 /usr/share/qbiff/readmail.private.txt
 /usr/share/qbiff/pixmaps
