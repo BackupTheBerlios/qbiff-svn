@@ -16,7 +16,9 @@ QBIFF_SERVER="localhost"
 ## Type:    string
 ## Default: "$HOME/.qbiffrc.data"
 #
-#  server password file
+#  server password file, add "linux" as content by default
+#  of course I recommend to change the certificates and use
+#  your own ones
 #
 QBIFF_SERVER_PWD="$HOME/.qbiffrc.data"
 
@@ -30,41 +32,7 @@ QBIFF_PORT=17142
 ## Type:    string
 ## Default: "ms"
 #
-#  run qbiff as specified user
+#  run qbiff as specified user, it's required to change
+#  that value to the user who owns the mail folder !
 #
-QBIFF_USER=ms
-## Description: qbiff Configuration
-## Type:    string
-## Default: "$HOME/Mail"
-#
-# qbiff options
-#
-QBIFF_FOLDER="$HOME/Mail"
-
-## Type:    string
-## Default: "localhost"
-#
-#  server IP or name for SSL post connection check
-#
-QBIFF_SERVER="localhost"
-
-## Type:    string
-## Default: "$HOME/.qbiffrc.data"
-#
-#  server password file
-#
-QBIFF_SERVER_PWD="$HOME/.qbiffrc.data"
-
-## Type:    integer
-## Default: 17142
-#
-#  server port
-#
-QBIFF_PORT=17142
-
-## Type:    string
-## Default: "ms"
-#
-#  run qbiff as specified user
-#
-QBIFF_USER=ms
+QBIFF_USER=nobody
