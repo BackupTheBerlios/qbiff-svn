@@ -120,13 +120,13 @@ install -m 644 cert-client/client.cnf \
 %{__rm} -rf %{buildroot}
 
 %preun -n qbiffd
-%stop_on_removal qbiffd
+%{stop_on_removal qbiffd}
 
 %post -n qbiffd
-%{fillup_and_insserv -n -s qbiffd}
+%{fillup_and_insserv}
 
 %postun -n qbiffd
-%restart_on_update qbiffd
+%{restart_on_update qbiffd}
 %{insserv_cleanup}
 
 #=================================================
