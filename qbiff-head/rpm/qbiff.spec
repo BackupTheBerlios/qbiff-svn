@@ -27,17 +27,20 @@ License:      Other License(s), see package, GPL
 Source:       qbiff.tar.bz2
 Source1:      qbiff.sysconfig
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
-Requires:     qbiff-server
 
 %description
-This package contains the qbiff application
+This package contains the qbiff application, which is a simple
+button bar notifiying about new mail and allows to run an application
+of your choice to read the mail
 
 %package -n qbiff-server
 Summary:  Server part of qbiff
 Group:    System/X11/Utilities
 
 %description -n qbiff-server
-This package contains the qbiff server
+This package contains the qbiff server, which takes control over the
+status of the maildir formatted mails on the machine the server
+runs on.
 
 Authors:
 --------
@@ -68,8 +71,8 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 
 install -m 755 qbiff               $RPM_BUILD_ROOT/usr/bin
+install -m 755 qbiff               $RPM_BUILD_ROOT/usr/bin/qbiffd
 install -m 755 qbiff-client        $RPM_BUILD_ROOT/usr/bin
-install -m 755 qbiff-server        $RPM_BUILD_ROOT/usr/bin
 install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail
 install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail.private
 install -m 644 pixmaps/newmail.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
@@ -78,7 +81,7 @@ install -m 644 pixmaps/private.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/public.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/shape.xpm   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 
-install -m 755 init.d/qbiff        $RPM_BUILD_ROOT/etc/init.d
+install -m 755 init.d/qbiffd       $RPM_BUILD_ROOT/etc/init.d
 
 rm -f %{buildroot}%{_sbindir}/rcqbiff
 %{__ln_s} ../../etc/init.d/qbiff %{buildroot}%{_sbindir}/rcqbiff
@@ -116,13 +119,13 @@ install -m 644 cert-client/client.cnf \
 %{__rm} -rf %{buildroot}
 
 %preun -n qbiff-server
-%stop_on_removal qbiff
+%stop_on_removal qbiffd
 
 %post -n qbiff-server
-%{fillup_and_insserv -n -s qbiff}
+%{fillup_and_insserv -n -s qbiffd}
 
 %postun -n qbiff-server
-%restart_on_update qbiff
+%restart_on_update qbiffd
 %{insserv_cleanup}
 
 #=================================================
@@ -131,10 +134,12 @@ install -m 644 cert-client/client.cnf \
 %files
 %defattr(-,root,root)
 %dir /usr/share/qbiff
+/usr/bin/qbiff
 /usr/bin/qbiff-client
 /usr/share/qbiff/readmail
 /usr/share/qbiff/readmail.private
 /usr/share/qbiff/pixmaps
+/usr/share/qbiff/cert-client
 
 #=================================================
 # qbiff server files...      
@@ -142,10 +147,8 @@ install -m 644 cert-client/client.cnf \
 %files -n qbiff-server
 %defattr(-,root,root)
 %dir /usr/share/qbiff
-/usr/bin/qbiff
-/usr/bin/qbiff-server
+/usr/bin/qbiffd
 /usr/share/qbiff/cert-server
-/usr/share/qbiff/cert-client
-%{_sbindir}/rcqbiff
-/etc/init.d/qbiff
+%{_sbindir}/rcqbiffd
+/etc/init.d/qbiffd
 /var/adm/fillup-templates/sysconfig.qbiff
