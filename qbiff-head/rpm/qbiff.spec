@@ -19,7 +19,9 @@ BuildRequires:  qt qt-devel qt-x11
 BuildRequires:  openssl-devel gcc-c++
 BuildRequires:  libpng-devel freetype2-devel
 %endif
-PreReq:       /bin/rm /bin/mkdir /usr/bin/chroot %fillup_prereq %insserv_prereq
+PreReq:       /bin/rm /bin/mkdir /usr/bin/chroot /bin/mv /bin/rm /bin/sed
+PreReq:       /usr/bin/grep /usr/bin/cmp /bin/fillup
+PreReq:       %fillup_prereq %insserv_prereq
 Summary:      Yet another biff implementation SSL server/client based
 Version:      2.1
 Release:      16
