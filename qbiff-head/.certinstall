@@ -1,7 +1,11 @@
 #!/bin/sh
 
-cp cert-server/dh* /usr/share/qbiff/cert-server
-cp cert-server/rootcert.pem /usr/share/qbiff/cert-server
-cp cert-server/server.pem /usr/share/qbiff/cert-server
+if [ -d /usr/share/qbiff/cert-server ];then
+	cp cert-server/dh* /usr/share/qbiff/cert-server
+	cp cert-server/rootcert.pem /usr/share/qbiff/cert-server
+	cp cert-server/server.pem /usr/share/qbiff/cert-server
+fi
 
-cp cert-client/client.pem /usr/share/qbiff/cert-client
+if [ -d /usr/share/qbiff/cert-client ];then
+	cp cert-client/client.pem /usr/share/qbiff/cert-client
+fi
