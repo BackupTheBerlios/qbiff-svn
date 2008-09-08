@@ -27,6 +27,7 @@ License:      Other License(s), see package, GPL
 Source:       qbiff.tar.bz2
 Source1:      qbiff.sysconfig
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+Requires:     openssh-askpass vim
 
 %description
 This package contains the qbiff application, which is a simple
