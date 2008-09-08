@@ -34,11 +34,11 @@ This package contains the qbiff application, which is a simple
 button bar notifiying about new mail and allows to run an application
 of your choice to read the mail
 
-%package -n qbiff-server
+%package -n qbiffd
 Summary:  Server part of qbiff
 Group:    System/X11/Utilities
 
-%description -n qbiff-server
+%description -n qbiffd
 This package contains the qbiff server, which takes control over the
 status of the maildir formatted mails on the machine the server
 runs on.
@@ -119,13 +119,13 @@ install -m 644 cert-client/client.cnf \
 %clean
 %{__rm} -rf %{buildroot}
 
-%preun -n qbiff-server
+%preun -n qbiffd
 %stop_on_removal qbiffd
 
-%post -n qbiff-server
+%post -n qbiffd
 %{fillup_and_insserv -n -s qbiffd}
 
-%postun -n qbiff-server
+%postun -n qbiffd
 %restart_on_update qbiffd
 %{insserv_cleanup}
 
@@ -145,7 +145,7 @@ install -m 644 cert-client/client.cnf \
 #=================================================
 # qbiff server files...      
 #-------------------------------------------------
-%files -n qbiff-server
+%files -n qbiffd
 %defattr(-,root,root)
 %dir /usr/share/qbiff
 /usr/bin/qbiffd
