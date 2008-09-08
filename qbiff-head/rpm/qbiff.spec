@@ -84,8 +84,8 @@ install -m 644 pixmaps/shape.xpm   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 
 install -m 755 init.d/qbiffd       $RPM_BUILD_ROOT/etc/init.d
 
-rm -f %{buildroot}%{_sbindir}/rcqbiff
-%{__ln_s} ../../etc/init.d/qbiff %{buildroot}%{_sbindir}/rcqbiff
+rm -f %{buildroot}%{_sbindir}/rcqbiffd
+%{__ln_s} ../../etc/init.d/qbiff %{buildroot}%{_sbindir}/rcqbiffd
 %{__install} -D -m 0644 %{S:1} %{buildroot}/var/adm/fillup-templates/sysconfig.qbiff
 
 install -m 644 cert-server/Makefile \
