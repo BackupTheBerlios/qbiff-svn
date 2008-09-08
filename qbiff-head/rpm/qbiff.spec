@@ -19,9 +19,6 @@ BuildRequires:  qt qt-devel qt-x11
 BuildRequires:  openssl-devel gcc-c++
 BuildRequires:  libpng-devel freetype2-devel
 %endif
-PreReq:       /bin/rm /bin/mkdir /usr/bin/chroot /bin/mv /bin/rm /bin/sed
-PreReq:       /usr/bin/grep /usr/bin/cmp /bin/fillup
-PreReq:       %fillup_prereq %insserv_prereq
 Summary:      Yet another biff implementation SSL server/client based
 Version:      2.1
 Release:      16
@@ -37,6 +34,7 @@ button bar notifiying about new mail and allows to run an application
 of your choice to read the mail
 
 %package -n qbiffd
+PreReq:   %fillup_prereq %insserv_prereq
 Summary:  Server part of qbiff
 Group:    System/X11/Utilities
 
