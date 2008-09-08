@@ -86,7 +86,7 @@ install -m 755 init.d/qbiffd       $RPM_BUILD_ROOT/etc/init.d
 
 rm -f %{buildroot}%{_sbindir}/rcqbiffd
 %{__ln_s} ../../etc/init.d/qbiffd %{buildroot}%{_sbindir}/rcqbiffd
-%{__install} -D -m 0644 %{S:1} %{buildroot}/var/adm/fillup-templates/sysconfig.qbiff
+%{__install} -D -m 0644 %{S:1} %{buildroot}/var/adm/fillup-templates/sysconfig.qbiffd
 
 install -m 644 cert-server/Makefile \
 	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
@@ -152,4 +152,4 @@ install -m 644 cert-client/client.cnf \
 /usr/share/qbiff/cert-server
 %{_sbindir}/rcqbiffd
 /etc/init.d/qbiffd
-/var/adm/fillup-templates/sysconfig.qbiff
+/var/adm/fillup-templates/sysconfig.qbiffd
