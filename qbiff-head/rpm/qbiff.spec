@@ -71,18 +71,21 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/cert-client
 mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 
-install -m 755 qbiff               $RPM_BUILD_ROOT/usr/bin
-install -m 755 qbiff               $RPM_BUILD_ROOT/usr/bin/qbiffd
-install -m 755 qbiff-client        $RPM_BUILD_ROOT/usr/bin
-install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail
-install -m 755 readmail.local      $RPM_BUILD_ROOT/usr/share/qbiff/readmail.private
-install -m 644 pixmaps/newmail.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
-install -m 644 pixmaps/nomail.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
-install -m 644 pixmaps/private.png $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
-install -m 644 pixmaps/public.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
-install -m 644 pixmaps/shape.xpm   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin
+install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin/qbiffd
+install -m 755 qbiff-client         $RPM_BUILD_ROOT/usr/bin
+install -m 755 readmail             $RPM_BUILD_ROOT/usr/share/qbiff
+install -m 755 readmail.private     $RPM_BUILD_ROOT/usr/share/qbiff
+install -m 755 readmail.txt         $RPM_BUILD_ROOT/usr/share/qbiff
+install -m 755 readmail.private.txt $RPM_BUILD_ROOT/usr/share/qbiff
 
-install -m 755 init.d/qbiffd       $RPM_BUILD_ROOT/etc/init.d
+install -m 644 pixmaps/newmail.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/nomail.png   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/private.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/public.png   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+install -m 644 pixmaps/shape.xpm    $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
+
+install -m 755 init.d/qbiffd        $RPM_BUILD_ROOT/etc/init.d
 
 rm -f %{buildroot}%{_sbindir}/rcqbiffd
 %{__ln_s} ../../etc/init.d/qbiffd %{buildroot}%{_sbindir}/rcqbiffd
@@ -139,6 +142,8 @@ install -m 644 cert-client/client.cnf \
 /usr/bin/qbiff-client
 /usr/share/qbiff/readmail
 /usr/share/qbiff/readmail.private
+/usr/share/qbiff/readmail.txt
+/usr/share/qbiff/readmail.private.txt
 /usr/share/qbiff/pixmaps
 /usr/share/qbiff/cert-client
 
