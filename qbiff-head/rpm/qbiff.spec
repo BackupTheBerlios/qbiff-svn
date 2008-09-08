@@ -45,7 +45,7 @@ runs on.
 
 Authors:
 --------
-    Marcus Schäfer <ms@suse.de>
+    Marcus Schaefer <ms@suse.de>
 #=================================================
 # Preparation...
 #-------------------------------------------------
