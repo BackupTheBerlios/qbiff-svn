@@ -82,6 +82,10 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 //-----------------------------------------
 void ClientFolder::gotLine ( QString line ) {
 	if (line == "INIT_DONE") {
+		// .../
+		// after init is done, move the button bar to
+		// the bottem left corner.
+		// ----
 		move (0,qApp->desktop()->height() - mHeight);
 		return;
 	}
