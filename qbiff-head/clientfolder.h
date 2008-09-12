@@ -58,6 +58,7 @@ class ClientFolder : public QWidget {
 
 	private:
 	int                        mHeight;
+	QFrame*                    mMainFrame;
 	QPalette                   mPDefault;
 	QPalette                   mPRed;
 	QPalette                   mPBlue;

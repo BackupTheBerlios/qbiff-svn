@@ -29,10 +29,20 @@ extern QString myFolder;
 // Constructor
 //-----------------------------------------
 ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
-	mButtonBar  = new QHBoxLayout ( this );
+	mMainFrame = new QFrame (this);
+	mButtonBar = new QHBoxLayout (this);
+	#if QT_VERSION > 0x040100
+	QString style;
+	QTextStream (&style)
+		<< "border: 1px;"
+		<< "background-color: qlineargradient"
+		<< "( x1:0, y1:0, x2:0, y2:1, stop:0 lightgrey, stop:1 grey );";
+	mMainFrame -> setFrameStyle ( QFrame::Plain );
+	mMainFrame -> setStyleSheet ( style );
+	#endif
 	mPrivatePixmap = QPixmap ( PIXPRIV );
 	mPublicsPixmap = QPixmap ( PIXPUBL );
-	mPrivate = new QPushButton ( this );
+	mPrivate = new QPushButton ( mMainFrame );
 	mPrivate -> setCheckable ( true );
 	mPrivate -> setIcon(QIcon(mPublicsPixmap));
 	mPrivate -> setIconSize(mPublicsPixmap.size());
@@ -104,7 +114,7 @@ void ClientFolder::gotLine ( QString line ) {
 		return;
 	}
 	if (! mButton.contains(folder)) {
-		Button* btn = new Button (folder,this);
+		Button* btn = new Button (folder,mMainFrame);
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
 		btn->setPalette (mPBlue);
 		btn->setFocusPolicy (Qt::NoFocus);
@@ -151,6 +161,7 @@ void ClientFolder::gotLine ( QString line ) {
 		mInfo[folder]->setTip (newmail,curmail);
 	}
 	resize (sizeHint());
+	mMainFrame -> resize (sizeHint());
 	mHeight = height();
 }
 
