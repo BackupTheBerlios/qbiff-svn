@@ -36,7 +36,8 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 	mPrivate -> setCheckable ( true );
 	mPrivate -> setIcon(QIcon(mPublicsPixmap));
 	mPrivate -> setIconSize(mPublicsPixmap.size());
-	mPrivate -> setFixedWidth (mPublicsPixmap.width() + 20);
+	mPrivate -> setFixedWidth  (mPublicsPixmap.width()  + 20);
+	mPrivate -> setFixedHeight (mPublicsPixmap.height() + 10);
 	mPDefault = mPrivate -> palette();
 	mPBlue = mPDefault;
 	mPBlue.setColor( QPalette::Button, QColor(60,60,153));
@@ -75,6 +76,7 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 	mClient -> writeClient ("INIT");
 	mTimer  -> start ( 10 );
 	mTimerProc -> start ( 10 );
+	hide();
 }
 
 //=========================================
@@ -84,9 +86,11 @@ void ClientFolder::gotLine ( QString line ) {
 	if (line == "INIT_DONE") {
 		// .../
 		// after init is done, move the button bar to
-		// the bottem left corner.
+		// the bottem left corner and show the complete
+		// window now.
 		// ----
 		move (0,qApp->desktop()->height() - mHeight);
+		show();
 		return;
 	}
 	QStringList tokens = QString::fromLocal8Bit(

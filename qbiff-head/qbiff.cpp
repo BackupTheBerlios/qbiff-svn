@@ -242,7 +242,7 @@ int main(int argc,char*argv[]) {
 		pFolder = new ClientFolder ( wflags );
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
-		pFolder -> show ();
+		pFolder -> hide ();
 	}
 	return app.exec();
 }
