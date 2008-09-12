@@ -243,9 +243,6 @@ int main(int argc,char*argv[]) {
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
 		pFolder -> show ();
-		pFolder -> move (
-			0,qApp->desktop()->height() - pFolder->height()
-		);
 	}
 	return app.exec();
 }

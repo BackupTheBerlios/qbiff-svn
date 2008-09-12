@@ -44,7 +44,8 @@ class ClientFolder : public QWidget {
 	ClientFolder ( Qt::WindowFlags = 0 );
 	void setRemoteMail  (bool);
 	void setToggle      (bool);
-	void cleanup (void);
+	void cleanup        (void);
+	int  getHeight      (void);
 
 	private slots:
 	void gotLine        (QString);
@@ -56,6 +57,7 @@ class ClientFolder : public QWidget {
 	void gotToggled     (bool);
 
 	private:
+	int                        mHeight;
 	QPalette                   mPDefault;
 	QPalette                   mPRed;
 	QPalette                   mPBlue;

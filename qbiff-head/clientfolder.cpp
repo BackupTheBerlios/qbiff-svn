@@ -52,6 +52,7 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 	mButtonBar -> setSpacing (0);
 	mButtonBar -> setMargin (0);
 	mIsPrivate = false;
+	mHeight = 0;
 	connect (
 		mPrivate , SIGNAL (toggled    ( bool )),
 		this     , SLOT   (gotToggled ( bool ))
@@ -80,6 +81,10 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 // gotLine
 //-----------------------------------------
 void ClientFolder::gotLine ( QString line ) {
+	if (line == "INIT_DONE") {
+		move (0,qApp->desktop()->height() - mHeight);
+		return;
+	}
 	QStringList tokens = QString::fromLocal8Bit(
 		line.toLatin1().data()
 	).split(":");
@@ -95,7 +100,7 @@ void ClientFolder::gotLine ( QString line ) {
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
 		btn->setPalette (mPBlue);
 		btn->setFocusPolicy (Qt::NoFocus);
-		btn->setFixedHeight (mPrivate->height());
+		btn->setMinimumHeight (mPrivate->height());
 		QObject::connect (
 			btn , SIGNAL ( clickedButton (QPushButton*) ),
 			this, SLOT   ( folderEvent   (QPushButton*) )
@@ -138,6 +143,7 @@ void ClientFolder::gotLine ( QString line ) {
 		mInfo[folder]->setTip (newmail,curmail);
 	}
 	resize (sizeHint());
+	mHeight = height();
 }
 
 //=========================================
@@ -256,4 +262,11 @@ void ClientFolder::gotToggled (bool on) {
 		mPrivate -> setIconSize(mPrivatePixmap.size());
 		mIsPrivate = true;
 	}
+}
+
+//=========================================
+// getHeight
+//-----------------------------------------
+int ClientFolder::getHeight (void) {
+	return mHeight;
 }

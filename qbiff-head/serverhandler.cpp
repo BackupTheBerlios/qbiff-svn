@@ -124,6 +124,7 @@ void ServerHandler::clientInit (void) {
 		ServerFolder* thisFolder = it.next();
 		thisFolder -> updateFolder();
 	}
+	mServer -> writeClient ("INIT_DONE");
 }
 
 //=========================================
