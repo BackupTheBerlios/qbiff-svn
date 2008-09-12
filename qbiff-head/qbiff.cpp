@@ -235,11 +235,17 @@ int main(int argc,char*argv[]) {
 		pServer = new ServerHandler;
 	} else {
 		Qt::WFlags wflags = Qt::Window;
-		wflags |= Qt::FramelessWindowHint;
+		wflags |= 
+			Qt::FramelessWindowHint  |
+			Qt::WindowStaysOnTopHint |
+			Qt::X11BypassWindowManagerHint;
 		pFolder = new ClientFolder ( wflags );
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
 		pFolder -> show ();
+		pFolder -> move (
+			0,qApp->desktop()->height() - pFolder->height()
+		);
 	}
 	return app.exec();
 }
