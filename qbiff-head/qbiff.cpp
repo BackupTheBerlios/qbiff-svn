@@ -236,9 +236,10 @@ int main(int argc,char*argv[]) {
 	} else {
 		Qt::WFlags wflags = Qt::Window;
 		wflags |= 
-			Qt::FramelessWindowHint  |
-			//Qt::X11BypassWindowManagerHint |
-			Qt::WindowStaysOnTopHint;
+			Qt::FramelessWindowHint
+			//| Qt::X11BypassWindowManagerHint
+			//| Qt::WindowStaysOnTopHint
+			;
 		pFolder = new ClientFolder ( wflags );
 		pFolder -> setRemoteMail (remoteMail);
 		pFolder -> setToggle (haveToggle);
