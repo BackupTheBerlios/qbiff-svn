@@ -12,6 +12,7 @@ serial           = $dir/serial
  
 default_crl_days = 365
 default_days     = 365
+notAfter         = 121230120000Z
 default_md       = sha1
 policy           = exampleca_policy
 x509_extensions  = certificate_extensions
