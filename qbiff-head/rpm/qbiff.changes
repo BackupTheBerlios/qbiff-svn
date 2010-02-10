@@ -1,4 +1,10 @@
 ---------------------------------------------------------
+Wed Feb 10 11:10:09 CET 2010 - ms@suse.de
+
+- fixed init script
+- changed polling time from 10 to 50ms
+
+---------------------------------------------------------
 Tue Mar 25 13:19:28 CET 2008 - ms@suse.de
 
 - ported to qt4, make it more flexible, server client

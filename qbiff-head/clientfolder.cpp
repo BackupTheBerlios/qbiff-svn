@@ -84,8 +84,8 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 		this      , SLOT   (timerProcDone (void))
 	);
 	mClient -> writeClient ("INIT");
-	mTimer  -> start ( 10 );
-	mTimerProc -> start ( 10 );
+	mTimer  -> start ( 50 );
+	mTimerProc -> start ( 50 );
 	hide();
 }
 

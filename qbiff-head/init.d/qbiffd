@@ -25,7 +25,7 @@
 rc_reset
 
 if [ $UID = 0 ] && [ ! -z "$QBIFF_USER" ];then
-	su -c "bash -c \"/etc/init.d/qbiff $@\"" $QBIFF_USER
+	su -c "bash -c \"/etc/init.d/qbiffd $@\"" $QBIFF_USER
 	exit
 fi
 
