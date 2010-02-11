@@ -66,6 +66,7 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 		qerror ("Couldn't make socket nonblocking");
 	}
 	mDataToWrite = false;
+	mPendingSelect = false;
 	FD_ZERO (&readFDs);
 	FD_ZERO (&writeFDs);
 	printf ("SSL Connection created\n");
@@ -75,6 +76,9 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 // clientReadWrite
 //-----------------------------------------
 void SSLClient::clientReadWrite ( void ) {
+	if (mPendingSelect) {
+		return;
+	}
 	if (mDataToWrite) {
 		FD_SET (mSocket,&writeFDs);
 	} else {
@@ -84,8 +88,11 @@ void SSLClient::clientReadWrite ( void ) {
 	timeout.tv_sec  = 0;
 	timeout.tv_usec = 1000;
 	int width = mSocket + 1;
-	int r = select (width,&readFDs,&writeFDs,0,&timeout);
+	mPendingSelect = true;
+	int r = select (width,&readFDs,&writeFDs,0,0);
+	mPendingSelect = false;
 	if (r == 0) {
+		printf ("nothing to read\n");
 		return;
 	}
 	char buf[2];

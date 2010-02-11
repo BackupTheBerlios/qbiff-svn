@@ -37,6 +37,7 @@ class SSLClient : public SSLCommon {
 
 	private:
 	bool     mDataToWrite;
+	bool     mPendingSelect;
 	int      mSocket;
 	fd_set   readFDs;
 	fd_set   writeFDs;
