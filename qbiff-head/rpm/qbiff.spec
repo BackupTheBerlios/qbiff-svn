@@ -1,5 +1,5 @@
 #
-# spec file for package qbiff (Version 7.1)
+# spec file for package qbiff (Version 7.2)
 #
 # Copyright (c) 2004 SUSE LINUX AG, Nuernberg, Germany.
 # This file and all modifications and additions to the pristine
@@ -7,27 +7,20 @@
 #
 #
 Name: qbiff
-%if %{suse_version} > 1020
-BuildRequires:  fdupes
-%endif
-%if %{suse_version} > 1010
+BuildRequires:  fdupes cmake
 BuildRequires:  libqt4 libqt4-devel libqt4-x11
 BuildRequires:  openssl-devel
-%endif
-%if %{suse_version} <= 1010
-BuildRequires:  qt qt-devel qt-x11
-BuildRequires:  openssl-devel gcc-c++
-BuildRequires:  libpng-devel freetype2-devel
-%endif
+BuildRequires:  libkde4-devel
 Summary:      Yet another biff implementation SSL server/client based
-Version:      2.1
+Version:      7.2
 Release:      16
 Group:        System/X11/Utilities
 License:      Other License(s), see package, GPL
 Source:       qbiff.tar.bz2
 Source1:      qbiff.sysconfig
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
-Requires:     openssh-askpass vim
+%kde4_runtime_requires
+Requires:     vim
 
 %description
 This package contains the qbiff application, which is a simple
@@ -55,10 +48,17 @@ Authors:
 
 %build
 test -e /.buildenv && . /.buildenv
+export CFLAGS=$RPM_OPT_FLAGS CXXFLAGS="$RPM_OPT_FLAGS" \
 #=================================================
 # build sources
 #-------------------------------------------------
-./.make && make
+(
+	mkdir wallet/build && cd wallet/build && \
+	cmake ../ -DCMAKE_INSTALL_PREFIX="/usr"
+)
+./.make
+make -C wallet/build all
+make
 
 #=================================================
 # install sources
@@ -72,13 +72,15 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/cert-client
 mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 
+make -C wallet/build DESTDIR="%{buildroot}" install
+
 install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin
 install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin/qbiffd
 install -m 755 qbiff-client         $RPM_BUILD_ROOT/usr/bin
 install -m 755 readmail             $RPM_BUILD_ROOT/usr/share/qbiff
 install -m 755 readmail.private     $RPM_BUILD_ROOT/usr/share/qbiff
-install -m 755 readmail.txt         $RPM_BUILD_ROOT/usr/share/qbiff
-install -m 755 readmail.private.txt $RPM_BUILD_ROOT/usr/share/qbiff
+install -m 644 readmail.txt         $RPM_BUILD_ROOT/usr/share/qbiff
+install -m 644 readmail.private.txt $RPM_BUILD_ROOT/usr/share/qbiff
 
 install -m 644 pixmaps/newmail.png  $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 install -m 644 pixmaps/nomail.png   $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
@@ -116,9 +118,7 @@ install -m 644 cert-client/client.pem \
 install -m 644 cert-client/client.cnf \
 	$RPM_BUILD_ROOT/usr/share/qbiff/cert-client
 
-%if %{suse_version} > 1020
 %fdupes $RPM_BUILD_ROOT/usr/share/qbiff
-%endif
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -140,6 +140,7 @@ install -m 644 cert-client/client.cnf \
 %defattr(-,root,root)
 %dir /usr/share/qbiff
 /usr/bin/qbiff
+/usr/bin/qbiff-pwd
 /usr/bin/qbiff-client
 %config /usr/share/qbiff/readmail
 %config /usr/share/qbiff/readmail.private
