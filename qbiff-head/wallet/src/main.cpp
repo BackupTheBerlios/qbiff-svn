@@ -125,6 +125,6 @@ int main(int argc, char **argv) {
 	//-----------------------------------------
 	delete wallet;
 	QTextStream out(stdout);
-	out << password;
+	out << password << endl; 
 	return 0; 
 }
