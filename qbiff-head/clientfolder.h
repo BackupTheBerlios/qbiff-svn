@@ -30,9 +30,9 @@ STATUS        : Status: Beta
 #include <signal.h>
 
 #include "button.h"
-#include "sslclient.h"
 #include "config.h"
 #include "clientinfo.h"
+#include "clientinit.h"
 
 //=========================================
 // Class ClientFolder
@@ -52,7 +52,6 @@ class ClientFolder : public QWidget {
 	void folderEvent    (QPushButton*);
 	void showTip        (QPushButton*);
 	void hideTip        (QPushButton*);
-	void timerDone      (void);
 	void timerProcDone  (void);
 	void gotToggled     (bool);
 
@@ -65,7 +64,7 @@ class ClientFolder : public QWidget {
 	QPalette                   mPGreen;
 	QTimer*                    mTimer;
 	QTimer*                    mTimerProc;
-	SSLClient*                 mClient;
+	ClientInit*                mClient;
 	QPushButton*               mPrivate;
 	QPixmap                    mPublicsPixmap;
 	QPixmap                    mPrivatePixmap;

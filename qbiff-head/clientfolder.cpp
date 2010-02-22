@@ -68,24 +68,18 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 		mPrivate , SIGNAL (toggled    ( bool )),
 		this     , SLOT   (gotToggled ( bool ))
 	);
-	mTimer      = new QTimer ( this );
 	mTimerProc  = new QTimer ( this );
-	mClient     = new SSLClient;
+	mClient = new ClientInit();
 	connect (
-        mClient , SIGNAL (gotLine ( QString )),
-        this    , SLOT   (gotLine ( QString ))
+        mClient , SIGNAL (gotEvent ( QString )),
+        this    , SLOT   (gotLine  ( QString ))
     );
-	connect (
-		mTimer , SIGNAL (timeout   (void)),
-		this   , SLOT   (timerDone (void))
-	);
 	connect (
 		mTimerProc, SIGNAL (timeout       (void)),
 		this      , SLOT   (timerProcDone (void))
 	);
-	mClient -> writeClient ("INIT");
-	mTimer  -> start ( 100 );
-	mTimerProc -> start ( 200 );
+	mClient -> start();
+	mTimerProc -> start ( 500 );
 	hide();
 }
 
@@ -228,20 +222,13 @@ void ClientFolder::setToggle ( bool toggle ) {
 }
 
 //=========================================
-// timerDone
-//-----------------------------------------
-void ClientFolder::timerDone (void) {
-	mClient -> clientReadWrite ();
-	resize (sizeHint());
-}
-
-//=========================================
 // timerProcDone
 //-----------------------------------------
 void ClientFolder::timerProcDone (void) {
 	int pCount = 0;
 	int pRemove[mProcessList.count()];
 	QListIterator<QProcess*> it (mProcessList);
+	resize (sizeHint());
 	while (it.hasNext()) {
 		pRemove[pCount] = 0;
 		QProcess *proc = it.next();

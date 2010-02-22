@@ -65,10 +65,7 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 	if (fcntl (mSocket,F_SETFL,ofcmode | O_NDELAY)) {
 		qerror ("Couldn't make socket nonblocking");
 	}
-	mDataToWrite = false;
-	mPendingSelect = false;
 	FD_ZERO (&readFDs);
-	FD_ZERO (&writeFDs);
 	printf ("SSL Connection created\n");
 }
 
@@ -76,54 +73,43 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 // clientReadWrite
 //-----------------------------------------
 void SSLClient::clientReadWrite ( void ) {
-	if (mPendingSelect) {
-		return;
-	}
-	if (mDataToWrite) {
-		FD_SET (mSocket,&writeFDs);
-	} else {
-		FD_SET (mSocket,&readFDs);
-	}
-	struct timeval timeout;
-	timeout.tv_sec  = 0;
-	timeout.tv_usec = 1000;
+	FD_SET (mSocket,&readFDs);
 	int width = mSocket + 1;
-	mPendingSelect = true;
-	int r = select (width,&readFDs,&writeFDs,0,0);
-	mPendingSelect = false;
-	if (r == 0) {
-		printf ("nothing to read\n");
-		return;
-	}
-	char buf[2];
-	QString line;
-	int len = 0;
-	if (FD_ISSET (mSocket,&readFDs)) {
-		do {
-			int r = SSL_read (ssl,buf,1);
-			switch (SSL_get_error(ssl,r)) {
-			case SSL_ERROR_NONE:
-				len=r;
-			break;
-			case SSL_ERROR_WANT_READ:
-				continue;
-			break;	
-			case SSL_ERROR_ZERO_RETURN:
-				continue;
-			break;
-			case SSL_ERROR_SYSCALL:
-				qerror ("SSL Error: Premature close");
-			break;
-			default:
-				continue;
-			break;
-			}
-			if (buf[0] == '\n') {
-				gotLine (line);
-			} else {
-				line.append(buf[0]);
-			}
-		} while (SSL_pending(ssl));
+	while (1) {
+		//struct timeval timeout;
+		//timeout.tv_sec  = 0;
+		//timeout.tv_usec = 1000;
+		select (width,&readFDs,0,0,0);
+		char buf[2];
+		QString line;
+		int len = 0;
+		if (FD_ISSET (mSocket,&readFDs)) {
+			do {
+				int r = SSL_read (ssl,buf,1);
+				switch (SSL_get_error(ssl,r)) {
+				case SSL_ERROR_NONE:
+					len=r;
+				break;
+				case SSL_ERROR_WANT_READ:
+					continue;
+				break;	
+				case SSL_ERROR_ZERO_RETURN:
+					continue;
+				break;
+				case SSL_ERROR_SYSCALL:
+					qerror ("SSL Error: Premature close");
+				break;
+				default:
+					continue;
+				break;
+				}
+				if (buf[0] == '\n') {
+					gotLine (line);
+				} else {
+					line.append(buf[0]);
+				}
+			} while (SSL_pending(ssl));
+		}
 	}
 }
 
@@ -132,8 +118,6 @@ void SSLClient::clientReadWrite ( void ) {
 //-----------------------------------------
 void SSLClient::writeClient ( const QString & data ) {
 	int err = 0;
-	mDataToWrite = true;
-	FD_SET (mSocket,&writeFDs);
 	QString stream (data + "\n");
 	char buf[stream.length()+1];
 	memset (&buf, '\0', sizeof(buf));
@@ -153,8 +137,6 @@ void SSLClient::writeClient ( const QString & data ) {
 			return;
 		}
 	}
-	FD_SET (mSocket,&readFDs);
-	mDataToWrite = false;
 }
 
 //=========================================
