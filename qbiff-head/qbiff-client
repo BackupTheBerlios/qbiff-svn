@@ -1,6 +1,9 @@
 #!/bin/sh
 
 ASK=/usr/bin/qbiff-pwd
+if [ ! -e $ASK ];then
+	ASK=/usr/lib/ssh/x11-ssh-askpass
+fi
 if [ -x ./qbiff ];then
 	$ASK | ./qbiff $@
 else
