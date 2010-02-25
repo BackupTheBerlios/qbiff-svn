@@ -25,10 +25,13 @@ extern QString PIXPUBL;
 extern QString PIXPRIV;
 extern QString myFolder;
 
+static ClientFolder* pClientFolder;
+
 //=========================================
 // Constructor
 //-----------------------------------------
 ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
+	pClientFolder = this;
 	mMainFrame = new QFrame (this);
 	mButtonBar = new QHBoxLayout (this);
 	#if QT_VERSION > 0x040100
@@ -68,19 +71,12 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
 		mPrivate , SIGNAL (toggled    ( bool )),
 		this     , SLOT   (gotToggled ( bool ))
 	);
-	mTimerProc  = new QTimer ( this );
 	mClient = new ClientInit();
 	connect (
         mClient , SIGNAL (gotEvent ( QString )),
         this    , SLOT   (gotLine  ( QString ))
     );
-	connect (
-		mTimerProc, SIGNAL (timeout       (void)),
-		this      , SLOT   (timerProcDone (void))
-	);
 	mClient -> start();
-	mTimerProc -> start ( 500 );
-	hide();
 }
 
 //=========================================
@@ -198,9 +194,13 @@ void ClientFolder::folderEvent (QPushButton* btn) {
 	//printf ("%s %s\n",
 	//	program.toLatin1().data(),arguments.join(":").toLatin1().data()
 	//);
-	proc->start (program,arguments);
+	connect (
+		proc , SIGNAL (finished    ( int,QProcess::ExitStatus )),
+		this , SLOT   (gotFinished ( int,QProcess::ExitStatus ))
+	);
 	mProcessList.append (proc);
 	mButtonsList.append ((Button*)btn);
+	proc->start (program,arguments);
 }
 
 //=========================================
@@ -222,13 +222,12 @@ void ClientFolder::setToggle ( bool toggle ) {
 }
 
 //=========================================
-// timerProcDone
+// gotFinished 
 //-----------------------------------------
-void ClientFolder::timerProcDone (void) {
+void ClientFolder::gotFinished ( int,QProcess::ExitStatus ) {
 	int pCount = 0;
 	int pRemove[mProcessList.count()];
 	QListIterator<QProcess*> it (mProcessList);
-	resize (sizeHint());
 	while (it.hasNext()) {
 		pRemove[pCount] = 0;
 		QProcess *proc = it.next();
@@ -250,8 +249,6 @@ void ClientFolder::timerProcDone (void) {
 // End Session
 //-----------------------------------------
 void ClientFolder::cleanup (void) {
-	mTimer  -> stop();
-	mTimerProc -> stop();
 	mClient -> writeClient ("QUIT");
 }
 

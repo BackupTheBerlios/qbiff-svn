@@ -52,8 +52,8 @@ class ClientFolder : public QWidget {
 	void folderEvent    (QPushButton*);
 	void showTip        (QPushButton*);
 	void hideTip        (QPushButton*);
-	void timerProcDone  (void);
 	void gotToggled     (bool);
+	void gotFinished    ( int,QProcess::ExitStatus );
 
 	private:
 	int                        mHeight;
@@ -62,8 +62,6 @@ class ClientFolder : public QWidget {
 	QPalette                   mPRed;
 	QPalette                   mPBlue;
 	QPalette                   mPGreen;
-	QTimer*                    mTimer;
-	QTimer*                    mTimerProc;
 	ClientInit*                mClient;
 	QPushButton*               mPrivate;
 	QPixmap                    mPublicsPixmap;
