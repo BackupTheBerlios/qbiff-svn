@@ -77,6 +77,7 @@ ClientFolder::ClientFolder (Qt::WindowFlags wflags) : QWidget (0,wflags)  {
         this    , SLOT   (gotLine  ( QString ))
     );
 	mClient -> start();
+	hide();
 }
 
 //=========================================
@@ -153,6 +154,20 @@ void ClientFolder::gotLine ( QString line ) {
 	resize (sizeHint());
 	mMainFrame -> resize (sizeHint());
 	mHeight = height();
+	QTimer* mTimer = new QTimer ( this );
+	connect (
+		mTimer , SIGNAL (timeout   (void)),
+		this   , SLOT   (timerDone (void))
+	);
+	mTimer->setSingleShot (true);
+	mTimer->start ( 10 );
+}
+
+//=========================================
+// timerDone
+//-----------------------------------------
+void ClientFolder::timerDone (void) {
+	resize (sizeHint());
 }
 
 //=========================================

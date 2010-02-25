@@ -53,7 +53,8 @@ class ClientFolder : public QWidget {
 	void showTip        (QPushButton*);
 	void hideTip        (QPushButton*);
 	void gotToggled     (bool);
-	void gotFinished    ( int,QProcess::ExitStatus );
+	void gotFinished    (int,QProcess::ExitStatus);
+	void timerDone      (void);
 
 	private:
 	int                        mHeight;
