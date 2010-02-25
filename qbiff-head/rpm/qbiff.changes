@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 25 15:24:39 CET 2010 - ms@suse.de
+
+- use finished signal for process termination detection
+- use a single shot timer to resize according to sizeHint()
+
+-------------------------------------------------------------------
 Mon Feb 22 14:46:10 CET 2010 - ms@suse.de
 
 - don't poll on SSL_read, just initiate a thread
