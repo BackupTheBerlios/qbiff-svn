@@ -125,14 +125,6 @@ void Notify::init ( bool clean ) {
 		}
 	}
 	sigprocmask(SIG_UNBLOCK, &block_set,0);
-	#if 0
-	mTimer = new QTimer ( this );
-	connect ( 
-		mTimer , SIGNAL (timeout   (void)),
-		this   , SLOT   (timerDone (void))
-	);
-	mTimer -> start ( 10, FALSE );
-	#endif
 }
 
 //=========================================

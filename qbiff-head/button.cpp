@@ -38,6 +38,7 @@ Button::Button(
 	setFont (QFont (myButtonFont, myButtonFontSize, QFont::Bold));
 	mLastNewCount = 0;
 	mTimer = new QTimer ( this );
+	mTimer -> setSingleShot ( true );
 	connect (
 		mTimer , SIGNAL (timeout   (void)),
 		this   , SLOT   (timerDone (void))
@@ -56,8 +57,7 @@ void Button::slotClicked (void) {
 // timerDone
 //-----------------------------------------
 void Button::timerDone (void) {
-	showTip(this);
-	mTimer->stop();
+	showTip (this);
 }
 
 //=========================================
@@ -71,7 +71,7 @@ bool Button::eventFilter ( QObject*, QEvent* event ) {
 	//printf ("%d\n",mouse->type());
 	switch (mouse->type()) {
 		case QEvent::HoverEnter:
-			mTimer->start(1000);
+			mTimer->start ( 1000 );
 		break;
 		case QEvent::HoverLeave:
 			mTimer->stop();

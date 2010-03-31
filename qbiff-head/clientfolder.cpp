@@ -101,9 +101,10 @@ void ClientFolder::gotLine ( QString line ) {
 	QString status = tokens[1];
 	QString newmail= tokens[2];
 	QString curmail= tokens[3];
-	if (folder.isEmpty()) {
+	if ((folder.isEmpty()) || (status == preStatus)) {
 		return;
 	}
+	preStatus = status;
 	if (! mButton.contains(folder)) {
 		Button* btn = new Button (folder,mMainFrame);
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());

@@ -57,6 +57,7 @@ ClientInfo::ClientInfo (
 	layer1 -> setMargin (0);
 	mFolder = folder;
 	mTimer = new QTimer ( this );
+	mTimer -> setSingleShot ( true );
 	connect (
 		mTimer , SIGNAL (timeout   (void)),
 		this   , SLOT   (timerDone (void))
