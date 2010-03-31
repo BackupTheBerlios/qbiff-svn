@@ -101,10 +101,9 @@ void ClientFolder::gotLine ( QString line ) {
 	QString status = tokens[1];
 	QString newmail= tokens[2];
 	QString curmail= tokens[3];
-	if ((folder.isEmpty()) || (status == preStatus)) {
+	if (folder.isEmpty()) {
 		return;
 	}
-	preStatus = status;
 	if (! mButton.contains(folder)) {
 		Button* btn = new Button (folder,mMainFrame);
 		ClientInfo* info = new ClientInfo (folder,btn,newmail.toInt());
@@ -137,6 +136,11 @@ void ClientFolder::gotLine ( QString line ) {
 		}
 		mInfo[folder]->setTip (newmail,curmail,false);
 	} else {
+		QString preStatus = mButton[folder]->getStatus();
+		if (status == preStatus) {
+			return;
+		}
+		mButton[folder]->setStatus (status);
 		if ( status == "new" ) {
 			mButton[folder]->setHidden (false);
 			mButton[folder]->setPalette (mPDefault);

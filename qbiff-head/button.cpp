@@ -44,6 +44,7 @@ Button::Button(
 		this   , SLOT   (timerDone (void))
 	);
 	installEventFilter (this);
+	mStatus = "unknown";
 }
 
 //=========================================
@@ -83,3 +84,16 @@ bool Button::eventFilter ( QObject*, QEvent* event ) {
 	return (false);
 }
 
+//=========================================
+// setStatus
+//-----------------------------------------
+void Button::setStatus (const QString& status) {
+	mStatus = status;
+}
+
+//=========================================
+// getStatus
+//-----------------------------------------
+QString Button::getStatus (void) {
+	return mStatus;
+}

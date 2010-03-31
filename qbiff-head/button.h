@@ -42,12 +42,15 @@ class Button : public QPushButton {
 	int      mLastNewCount;
 	QString  mFolder;
 	QTimer*  mTimer;
+	QString  mStatus;
 
 	private:
 	bool eventFilter ( QObject*, QEvent* );
 
 	public:
 	Button( const QString &, QWidget* );
+	QString getStatus (void);
+	void setStatus (const QString&);
 
 	private slots:
 	void slotClicked (void);
