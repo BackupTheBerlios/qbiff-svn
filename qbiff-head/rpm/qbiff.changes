@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 31 14:40:45 CEST 2010 - ms@suse.de
+
+- fixed timer usage, tested with powertop to make sure
+  qbiff does not consume power when it is not required
+
+-------------------------------------------------------------------
 Thu Feb 25 15:24:39 CET 2010 - ms@suse.de
 
 - use finished signal for process termination detection
