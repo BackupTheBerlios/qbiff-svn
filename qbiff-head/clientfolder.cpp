@@ -165,7 +165,7 @@ void ClientFolder::gotLine ( QString line ) {
 		this   , SLOT   (timerDone (void))
 	);
 	mTimer->setSingleShot (true);
-	mTimer->start ( 10 );
+	mTimer->start ( 50 );
 }
 
 //=========================================
