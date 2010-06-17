@@ -136,10 +136,6 @@ void ClientFolder::gotLine ( QString line ) {
 		}
 		mInfo[folder]->setTip (newmail,curmail,false);
 	} else {
-		QString preStatus = mButton[folder]->getStatus();
-		if (status == preStatus) {
-			return;
-		}
 		mButton[folder]->setStatus (status);
 		if ( status == "new" ) {
 			mButton[folder]->setHidden (false);
