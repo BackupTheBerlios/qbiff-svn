@@ -27,6 +27,8 @@ extern QString PIXNEWMAIL;
 extern QString PIXNOMAIL;
 extern QString PIXPUBL;
 extern QString PIXPRIV;
+extern QString myButtonFont;
+extern int myButtonFontSize;
 
 //============================================
 // Constructor
@@ -51,6 +53,7 @@ ClientInfo::ClientInfo (
 	shapeFrame -> setFixedWidth  (mShape.width());
 	shapeFrame -> setFixedHeight (mShape.height());
 	mLabel  = new QLabel ( shapeFrame );
+	mLabel -> setFont (QFont (myButtonFont, myButtonFontSize, QFont::Bold));
 	mLabel -> setFrameStyle ( QFrame::Plain );
 	mLabel -> setLineWidth ( 0 );
 	layer1 -> addWidget ( shapeFrame );
