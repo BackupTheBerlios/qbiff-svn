@@ -23,6 +23,11 @@ STATUS        : Status: Beta
 #include <qfile.h>
 #include <getopt.h>
 #include <qiodevice.h>
+#include <KApplication>
+#include <KAboutData>
+#include <KCmdLineArgs>
+#include <KLocalizedString>
+#include <locale.h>
 
 #include "config.h"
 #include "serverhandler.h"
@@ -42,6 +47,7 @@ QString baseDir        = BASEDIR;
 QString myFolder       = MY_FOLDER;
 QString myButtonFont   = "FrutigerNextLT:style=Bold";
 int myButtonFontSize   = 10;
+KAboutData* about;
 
 //=========================================
 // Globals
@@ -83,11 +89,45 @@ int main(int argc,char*argv[]) {
 	sigaction (SIGTERM, &action , 0);
 
 	//=========================================
+	// about this program
+	//-----------------------------------------
+	about = new KAboutData (
+		"qbiff",
+		0,
+		ki18n("qbiff"),
+		"0.2.0",
+		ki18n("QBiff mail notification (maildir)"),
+		KAboutData::License_GPL,
+		ki18n("(c) 2009 Marcus Schaefer"),
+		ki18n("QBiff buttonbar, notify on new mail"),
+		"http://www.isny.homelinux.com",
+		"ms@suse.de"
+	);
+
+	//=========================================
 	// create Qt application
 	//-----------------------------------------
 	useGUI = getenv ( "DISPLAY" ) != 0;
-	QApplication app ( argc,argv,useGUI );
+	KCmdLineArgs::init (argc, argv, about);
 
+	KCmdLineOptions options;
+
+	options.add("r").add("remote",ki18n("Remote Mail"));
+	options.add("s").add("server <address>",ki18n("Server Address"));
+	options.add("p").add("port <number>",ki18n("Port Number"));
+	options.add("f").add("mailfolder <path>",ki18n("Mail Folder Path"));
+	options.add("F").add("buttonfont <name>",ki18n("Button Font"));
+	options.add("Z").add("buttonfontsize <size>",ki18n("Button Font Size"));
+	options.add("m").add("readmail <program>",ki18n("Mail Program"));
+	options.add("i").add("readpriv <program>",ki18n("Private Mail Program"));
+	options.add("b").add("basedir <path>",ki18n("Base Path"),"/usr/share/qbiff");
+	options.add("t").add("toggle",ki18n("Activate Toggle Button"));
+	options.add("h",ki18n("Help"));
+
+	KCmdLineArgs::addCmdLineOptions( options );
+	KApplication app ( useGUI );
+	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+	
 	//=========================================
 	// init variables...
 	//-----------------------------------------
@@ -97,86 +137,25 @@ int main(int argc,char*argv[]) {
 	//=========================================
 	// get options
 	//-----------------------------------------
-	while (1) {
-	int option_index = 0;
-	static struct option long_options[] =
-	{
-		{"remote"        , 0 , 0 , 'r'},
-		{"server"        , 1 , 0 , 's'},
-		{"port"          , 1 , 0 , 'p'},
-		{"mailfolder"    , 1 , 0 , 'f'},
-		{"buttonfont"    , 1 , 0 , 'F'},
-		{"buttonfontsize", 1 , 0 , 'Z'},
-		{"readmail"      , 1 , 0 , 'm'},
-		{"readpriv"      , 1 , 0 , 'i'},
-		{"basedir"       , 1 , 0 , 'b'},
-		{"toggle"        , 0 , 0 , 't'},
-		{"help"          , 0 , 0 , 'h'},
-		{0               , 0 , 0 , 0  }
-	};
-	int c = getopt_long (
-		argc, argv, "rhs:p:tf:m:i:b:",long_options, &option_index
-	);
-	if (c == -1)
-	break;
-
-	switch (c) {
-	case 0:
-		fprintf (stderr,"qbiff: option %s", long_options[option_index].name);
-		if (optarg) {
-			fprintf (stderr," with arg %s", optarg);
-		}
-		fprintf (stderr,"\n");
-	break;
-
-	case 't':
-		haveToggle = true;
-	break;
-
-	case 'r':
-		remoteMail = true;
-	break;
-
-	case 'f':
-		myFolder = *(new QString (optarg));
-		myFolder += "/";
-	break;
-
-	case 'Z':
-		myButtonFontSize = (new QString (optarg))->toInt();
-	break;
-
-	case 'F':
-		myButtonFont = *(new QString (optarg));
-	break;
-
-	case 's':
-		serverName = *(new QString (optarg));
-	break;
-
-	case 'p':
-		serverPort = (new QString (optarg))->toInt();
-	break;
-
-	case 'm':
-		mailClient = *(new QString (optarg));
-	break;
-
-	case 'i':
-		mailPrivate= *(new QString (optarg));
-	break;
-
-	case 'b':
-		baseDir = *(new QString (optarg));
-	break;
-
-	case 'h':
+	if (args->isSet("h")) {
 		usage();
-	break;
-	default:
-		exit (1);
 	}
+	if (args->isSet("toggle")) {
+		haveToggle = true;
 	}
+	if (args->isSet("remote")) {
+		remoteMail = true;
+	}
+	myFolder = args->getOption("mailfolder");
+	myButtonFontSize = args->getOption("buttonfontsize").toInt();
+	myButtonFont = args->getOption("buttonfont");
+	serverName = args->getOption("server");
+	serverPort = args->getOption("port").toInt();
+	mailClient = args->getOption("readmail");
+	mailPrivate= args->getOption("readpriv");
+	baseDir = args->getOption("basedir");
+	myFolder += "/";
+	args->clear();
 
 	//=======================================
 	// certification stuff

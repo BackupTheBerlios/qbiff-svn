@@ -16,6 +16,7 @@ STATUS        : Status: Beta
 #ifndef SSL_COMMON_H
 #define SSL_COMMON_H 1
 
+#include <sys/resource.h>
 #include <qapplication.h>
 #include <qstringlist.h>
 #include <qregexp.h>
@@ -36,6 +37,8 @@ STATUS        : Status: Beta
 #include <netdb.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <kwallet.h>
+#include <KAboutData>
 
 #include "config.h"
 

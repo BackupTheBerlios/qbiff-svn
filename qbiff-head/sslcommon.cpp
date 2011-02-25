@@ -15,6 +15,8 @@ STATUS        : Status: Beta
 **************/
 #include "sslcommon.h"
 
+#include <KPasswordDialog>
+
 //=========================================
 // Globals...
 //-----------------------------------------
@@ -26,6 +28,12 @@ extern QString DH512;
 //-----------------------------------------
 extern QString DH1024;
 extern QString DH512;
+
+//=========================================
+// Globals...
+//-----------------------------------------
+extern KAboutData* about;
+extern bool useGUI;
 
 //=========================================
 // Globals...
@@ -59,13 +67,84 @@ int verify_callback (int ok, X509_STORE_CTX *store) {
 // passwd_cb...
 //-----------------------------------------
 int passwd_cb (char* buf,int size,int,void*) {
-	char password[80];
-	char* p = 0;
-	p = fgets (password, sizeof(password), stdin);
-	password[strlen(password)-1]='\0';
-	strncpy(buf, (char *)(password), size);
-	buf[size - 1] = '\0';
-	return (strlen(buf));
+	if (! useGUI) {
+		char password[80];
+		char* p = 0;
+		p = fgets (password, sizeof(password), stdin);
+		password[strlen(password)-1]='\0';
+		strncpy(buf, (char *)(password), size);
+		buf[size - 1] = '\0';
+		return (strlen(buf));
+	} else {
+		//=========================================
+		// setup default password dialog
+		//-----------------------------------------
+		QString walletFolder = about->appName();
+		QString password;
+
+		//=========================================
+		// open wallet and ask for the password
+		//-----------------------------------------
+		KWallet::Wallet *wallet = KWallet::Wallet::openWallet(
+			KWallet::Wallet::NetworkWallet(), 0
+		);
+		if ( wallet && wallet->hasFolder(walletFolder) ) {
+			wallet->setFolder(walletFolder);
+			QString retrievedPass;
+			wallet->readPassword("qbiffp", retrievedPass);
+			if ( !retrievedPass.isEmpty() ) {
+				password = retrievedPass;
+			}
+		}
+		//=========================================
+		// password empty ask for it
+		//-----------------------------------------
+		if ( password.isEmpty() ) {
+			KPasswordDialog::KPasswordDialogFlag flag;
+			if ( wallet ) {
+				flag = KPasswordDialog::ShowKeepPassword;
+			}
+			KPasswordDialog kpd(0, flag);
+			kpd.setPrompt(i18n("Please enter password"));
+			kpd.setCaption(i18n("qbiff"));
+			// ...
+			// We don't want to dump core when the password dialog is
+			// shown, becauseit could contain the entered password.
+			// KPasswordDialog::disableCoreDumps()
+			// seems to be gone in KDE 4 -- do it manually
+			struct rlimit rlim;
+			rlim.rlim_cur = rlim.rlim_max = 0;
+			setrlimit(RLIMIT_CORE, &rlim);
+
+			if ( kpd.exec() == KDialog::Accepted ) {
+				password = kpd.password();
+				//=========================================
+				// store password in wallet if keep is set
+				//-----------------------------------------
+				if ( wallet && kpd.keepPassword() ) {
+					if ( !wallet->hasFolder( walletFolder ) ) {
+						wallet->createFolder(walletFolder);
+					}
+					wallet->setFolder(walletFolder);
+					wallet->writePassword("qbiffp", password);
+				}
+			} else {
+				//=========================================
+				// password dialog canceled
+				//-----------------------------------------
+				return 1;
+			}
+		}
+		//=========================================
+		// delete wallet
+		//-----------------------------------------
+		delete wallet;
+		//QTextStream out(stdout);
+		//out << password << endl;
+		strncpy(buf, password.toLatin1().data(), size);
+		buf[size - 1] = '\0';
+		return password.length();
+	}
 }
 
 //=========================================
@@ -160,7 +239,8 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 			unsigned char        *data;
 			STACK_OF(CONF_VALUE) *val;
 			CONF_VALUE           *nval;
-			const X509V3_EXT_METHOD    *meth;
+			// const X509V3_EXT_METHOD    *meth;
+			v3_ext_method *meth;
 			void                 *ext_str = NULL;
 
 			if (!(meth = X509V3_EXT_get(ext))) {
