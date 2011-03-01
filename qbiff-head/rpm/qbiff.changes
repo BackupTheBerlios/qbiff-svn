@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar  1 17:33:40 CET 2011 - ms@suse.de
+
+- changed build to cmake, fixed spec file
+- fixed socket setup and also build for different openssl
+  versions. Also support IPv6
+
+-------------------------------------------------------------------
 Wed Mar 31 14:40:45 CEST 2010 - ms@suse.de
 
 - fixed timer usage, tested with powertop to make sure
