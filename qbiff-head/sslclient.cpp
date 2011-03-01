@@ -29,7 +29,7 @@ extern int serverPort;
 // Constructor
 //-----------------------------------------
 SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
-	BIO *sbio;
+	BIO *sbio = NULL;
 	printf ("Initialize openssl\n");
 	init_OpenSSL ();
 	seed_prng ();
@@ -40,14 +40,10 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 
 	printf ("Creating new SSL object\n");
 	ssl = SSL_new (ctx);
-	printf ("Creating new SSL BIO socket\n");
+	printf ("Creating new SSL BIO socket: %d\n",mSocket);
 	sbio= BIO_new_socket (mSocket,BIO_NOCLOSE);
 	printf ("Setup SSL BIO socket\n");
 	SSL_set_bio (ssl,sbio,sbio);
-	printf ("Setup SSL and TCP socket\n");
-	SSL_set_fd (ssl,mSocket);
-	//printf ("Sleeping 5 sec\n");
-	//sleep (5);
 	printf ("Connecting SSL socket\n");
 	if (SSL_connect(ssl) <=0) {
 		qerror ("Error creating connection BIO");
@@ -143,11 +139,11 @@ void SSLClient::writeClient ( const QString & data ) {
 // connectTCP
 //-----------------------------------------
 void SSLClient::connectTCP (void) {
-	SOCKADDR_UNION addr;
 	QString port;
 	QTextStream (&port) << serverPort;
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
+	struct addrinfo *rp=NULL;
 	int err;
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family=AF_UNSPEC;
@@ -157,19 +153,21 @@ void SSLClient::connectTCP (void) {
 	err = getaddrinfo (
 		serverName.toLatin1().data(), port.toLatin1().data(), &hints, &res
 	);
-	if (err) {
-		if (res) {
-			freeaddrinfo(res);
-		}
+	if (err != 0) {
 		qerror ("Couldn't resolve host");
 	}
-	memcpy(&addr,res->ai_addr,res->ai_addrlen);
-	freeaddrinfo(res);
-	if ((mSocket=socket(addr.sa.sa_family,SOCK_STREAM | SOCK_CLOEXEC,0))<0) {
-		qerror ("Couldn't create socket");
+	for (rp = res; rp != NULL; rp = rp->ai_next) {
+		mSocket = socket(rp->ai_family,rp->ai_socktype,rp->ai_protocol);
+		if (mSocket == -1) {
+			continue;
+		}
+		if (::connect(mSocket,rp->ai_addr,rp->ai_addrlen) != -1) {
+			break; // success
+		}
+		close(mSocket);
 	}
-	if (::connect(mSocket,(struct sockaddr *)&addr,addr_len(addr))<0) {
-		qerror ("Couldn't connect socket");
+	if (rp == NULL) {
+		qerror ("Couldn't connect host");
 	}
 }
 
