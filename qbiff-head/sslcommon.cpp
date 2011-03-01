@@ -245,7 +245,7 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 			if (!(meth = (v3_ext_method*)X509V3_EXT_get(ext))) {
 				break;
 			}
-#elif
+#else
 			const X509V3_EXT_METHOD    *meth;
 			if (!(meth = X509V3_EXT_get(ext))) {
 				break;
