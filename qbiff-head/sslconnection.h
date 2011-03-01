@@ -16,7 +16,6 @@ STATUS        : Status: Beta
 #ifndef SSL_CONNECTION_H
 #define SSL_CONNECTION_H 1
 
-#include <qapplication.h>
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qtextstream.h>

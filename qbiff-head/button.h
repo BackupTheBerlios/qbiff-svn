@@ -17,7 +17,6 @@ STATUS        : Status: Beta
 #define BUTTON_H 1
 
 #include <qpushbutton.h>
-#include <qapplication.h>
 #include <qwidget.h>
 #include <qwhatsthis.h>
 #include <qstring.h>

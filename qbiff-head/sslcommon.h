@@ -17,7 +17,6 @@ STATUS        : Status: Beta
 #define SSL_COMMON_H 1
 
 #include <sys/resource.h>
-#include <qapplication.h>
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qtextstream.h>

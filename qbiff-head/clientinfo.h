@@ -17,7 +17,7 @@ STATUS        : Status: Up-to-date
 #ifndef CLIENTINFO_H
 #define CLIENTINFO_H 1
 
-#include <qapplication.h>
+#include <KApplication>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qtimer.h>

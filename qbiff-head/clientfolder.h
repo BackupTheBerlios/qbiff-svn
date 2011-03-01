@@ -16,9 +16,8 @@ STATUS        : Status: Beta
 #ifndef CLIENTFOLDER_H
 #define CLIENTFOLDER_H 1
 
-#include <qapplication.h>
+#include <KApplication>
 #include <qpushbutton.h>
-#include <qcombobox.h>
 #include <qprocess.h>
 #include <qwidget.h>
 #include <qlayout.h>

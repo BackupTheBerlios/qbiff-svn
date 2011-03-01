@@ -1,5 +1,5 @@
 /**************
-FILE          : sslserver.cpp
+FILE          : sslinit.cpp
 ***************
 PROJECT       : QBiff - A qt based biff
               :
@@ -14,6 +14,7 @@ DESCRIPTION   : network related socket functions
 STATUS        : Status: Beta
 **************/
 #include "sslserver.h"
+#include "sslinit.h"
 
 //=========================================
 // Globals...

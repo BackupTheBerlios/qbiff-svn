@@ -239,8 +239,8 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 			unsigned char        *data;
 			STACK_OF(CONF_VALUE) *val;
 			CONF_VALUE           *nval;
-			// const X509V3_EXT_METHOD    *meth;
-			v3_ext_method *meth;
+			const X509V3_EXT_METHOD    *meth;
+			//v3_ext_method *meth;
 			void                 *ext_str = NULL;
 
 			if (!(meth = X509V3_EXT_get(ext))) {

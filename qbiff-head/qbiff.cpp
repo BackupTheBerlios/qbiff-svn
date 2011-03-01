@@ -17,7 +17,6 @@ STATUS        : Status: Beta
 **************/
 #include <stdlib.h>
 #include <signal.h>
-#include <qapplication.h>
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qfile.h>

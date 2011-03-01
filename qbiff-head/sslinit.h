@@ -1,5 +1,5 @@
 /**************
-FILE          : sslserver.h
+FILE          : sslinit.h
 ***************
 PROJECT       : QBiff - A qt based biff
               :
@@ -16,7 +16,6 @@ STATUS        : Status: Beta
 #ifndef SSL_INIT_H
 #define SSL_INIT_H 1
 
-#include <qapplication.h>
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qtextstream.h>
