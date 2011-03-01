@@ -73,8 +73,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/init.d
 
 make -C build DESTDIR="%{buildroot}" install
 
-install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin
-install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin/qbiffd
+install -m 755 $RPM_BUILD_ROOT/usr/bin/qbiff  $RPM_BUILD_ROOT/usr/bin/qbiffd
 install -m 755 qbiff-client         $RPM_BUILD_ROOT/usr/bin
 install -m 755 readmail             $RPM_BUILD_ROOT/usr/share/qbiff
 install -m 755 readmail.private     $RPM_BUILD_ROOT/usr/share/qbiff
