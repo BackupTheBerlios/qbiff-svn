@@ -11,6 +11,7 @@ BuildRequires:  fdupes cmake
 BuildRequires:  libqt4 libqt4-devel libqt4-x11
 BuildRequires:  openssl-devel
 BuildRequires:  libkde4-devel
+BuildRequires:  cmake
 Summary:      Yet another biff implementation SSL server/client based
 Version:      7.2
 Release:      16
@@ -53,12 +54,10 @@ export CFLAGS=$RPM_OPT_FLAGS CXXFLAGS="$RPM_OPT_FLAGS" \
 # build sources
 #-------------------------------------------------
 (
-	mkdir wallet/build && cd wallet/build && \
+	mkdir build && cd build && \
 	cmake ../ -DCMAKE_INSTALL_PREFIX="/usr"
 )
-./.make
-make -C wallet/build all
-make
+make -C build all
 
 #=================================================
 # install sources
@@ -72,7 +71,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/cert-client
 mkdir -p $RPM_BUILD_ROOT/usr/share/qbiff/pixmaps
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 
-make -C wallet/build DESTDIR="%{buildroot}" install
+make -C build DESTDIR="%{buildroot}" install
 
 install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin
 install -m 755 qbiff                $RPM_BUILD_ROOT/usr/bin/qbiffd

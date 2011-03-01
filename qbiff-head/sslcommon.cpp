@@ -239,13 +239,18 @@ long SSLCommon::postConCheck (SSL *ssl, char *host) {
 			unsigned char        *data;
 			STACK_OF(CONF_VALUE) *val;
 			CONF_VALUE           *nval;
+			void  *ext_str = NULL;
+#if OPENSSL_VERSION_NUMBER <= 0x0090808fL
+			v3_ext_method *meth;
+			if (!(meth = (v3_ext_method*)X509V3_EXT_get(ext))) {
+				break;
+			}
+#elif
 			const X509V3_EXT_METHOD    *meth;
-			//v3_ext_method *meth;
-			void                 *ext_str = NULL;
-
 			if (!(meth = X509V3_EXT_get(ext))) {
 				break;
 			}
+#endif
 			data = ext->value->data;
 
 			#if (OPENSSL_VERSION_NUMBER > 0x00907000L)
