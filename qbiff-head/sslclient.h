@@ -25,6 +25,16 @@ STATUS        : Status: Beta
 #include "sslcommon.h"
 #include "config.h"
 
+
+#define addr_len(x) ((x).sa.sa_family==AF_INET ? \
+    sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6))
+
+typedef union sockaddr_union {
+	struct sockaddr sa;
+	struct sockaddr_in  in;
+	struct sockaddr_in6 in6;
+} SOCKADDR_UNION;
+
 //=========================================
 // Class SSLClient
 //-----------------------------------------

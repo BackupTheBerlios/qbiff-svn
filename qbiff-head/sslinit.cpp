@@ -54,13 +54,15 @@ void SSLServerInit::openConnection (void) {
 	sigaddset   (&block_set,SIGRTMIN+1);
 	sigprocmask (SIG_BLOCK, &block_set,0);
 	while (1) {
-		SSL* ssl;
+		SSL* ssl = NULL;
 		if (BIO_do_accept(acc) <= 0) {
-			qerror("Error accepting connection");
+			break;
 		}
 		BIO* client = BIO_pop(acc);
 		if (!(ssl = SSL_new(ctx))) {
-			qerror("Error creating SSL context");
+			SSL_free (ssl);
+			ERR_remove_state (0);
+			break;
 		}
 		SSL_set_accept_state(ssl);
 		SSL_set_bio(ssl, client, client);

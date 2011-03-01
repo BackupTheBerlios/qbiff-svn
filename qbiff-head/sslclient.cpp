@@ -143,22 +143,32 @@ void SSLClient::writeClient ( const QString & data ) {
 // connectTCP
 //-----------------------------------------
 void SSLClient::connectTCP (void) {
-	struct hostent *hp;
-	struct sockaddr_in addr;
-
-	if (!(hp=gethostbyname(serverName.toLatin1().data()))) {
+	SOCKADDR_UNION addr;
+	QString port;
+	QTextStream (&port) << serverPort;
+	struct addrinfo hints;
+	struct addrinfo *res=NULL;
+	int err;
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family=AF_UNSPEC;
+	hints.ai_socktype=SOCK_STREAM;
+	hints.ai_flags = 0;
+	hints.ai_protocol=0;
+	err = getaddrinfo (
+		serverName.toLatin1().data(), port.toLatin1().data(), &hints, &res
+	);
+	if (err) {
+		if (res) {
+			freeaddrinfo(res);
+		}
 		qerror ("Couldn't resolve host");
 	}
-	bzero(&addr,sizeof(addr));
-	bcopy (hp->h_addr,(char*)&addr.sin_addr,hp->h_length);
-	addr.sin_addr=*(struct in_addr*)hp->h_addr_list[0];
-	addr.sin_family=hp->h_addrtype;
-	addr.sin_port=htons(serverPort);
-
-	if ((mSocket = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
+	memcpy(&addr,res->ai_addr,res->ai_addrlen);
+	freeaddrinfo(res);
+	if ((mSocket=socket(addr.sa.sa_family,SOCK_STREAM | SOCK_CLOEXEC,0))<0) {
 		qerror ("Couldn't create socket");
 	}
-	if (::connect(mSocket,(struct sockaddr *)&addr,sizeof(addr))<0) {
+	if (::connect(mSocket,(struct sockaddr *)&addr,addr_len(addr))<0) {
 		qerror ("Couldn't connect socket");
 	}
 }
