@@ -29,15 +29,13 @@ if [ $UID = 0 ] && [ ! -z "$QBIFF_USER" ];then
 	exit
 fi
 
-unset DISPLAY
-
 case "$1" in
     start)
 	echo -n "Starting qbiff server"
 	if [ ! -f $QBIFF_SERVER_PWD ];then
 		echo "linux" > $QBIFF_SERVER_PWD
 	fi
-	cat $QBIFF_SERVER_PWD | qbiffd -p $QBIFF_PORT \
+	env -u DISPLAY cat $QBIFF_SERVER_PWD | qbiffd -p $QBIFF_PORT \
 		-f $QBIFF_FOLDER -s $QBIFF_SERVER &>/dev/null &
 	sleep 1
 	kill -0 $! &>/dev/null || rc_failed
