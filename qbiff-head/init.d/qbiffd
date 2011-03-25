@@ -35,6 +35,7 @@ case "$1" in
 	if [ ! -f $QBIFF_SERVER_PWD ];then
 		echo "linux" > $QBIFF_SERVER_PWD
 	fi
+	export $(dbus-launch)
 	env -u DISPLAY cat $QBIFF_SERVER_PWD | qbiffd -p $QBIFF_PORT \
 		-f $QBIFF_FOLDER -s $QBIFF_SERVER &>/dev/null &
 	sleep 1
