@@ -66,7 +66,6 @@ class SSLCommon : public QObject {
 	public:
 	void init_OpenSSL (void);
 	void seed_prng    (void);
-	long postConCheck (SSL*, char*);
 };
 
 #endif

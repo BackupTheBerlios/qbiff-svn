@@ -106,11 +106,10 @@ int main(int argc,char*argv[]) {
 	//=========================================
 	// create Qt application
 	//-----------------------------------------
-	useGUI = getenv ( "DISPLAY" ) != 0;
 	KCmdLineArgs::init (argc, argv, about);
 
 	KCmdLineOptions options;
-
+	options.add("d").add("daemon",ki18n("Daemon/Server mode"));
 	options.add("r").add("remote",ki18n("Remote Mail"));
 	options.add("s").add("server <address>",ki18n("Server Address"));
 	options.add("p").add("port <number>",ki18n("Port Number"));
@@ -124,8 +123,12 @@ int main(int argc,char*argv[]) {
 	options.add("h",ki18n("Help"));
 
 	KCmdLineArgs::addCmdLineOptions( options );
-	KApplication app ( useGUI );
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+	if (! args->isSet("daemon")) {
+		useGUI = true;
+	}
+	KApplication app ( useGUI );
 	
 	//=========================================
 	// init variables...

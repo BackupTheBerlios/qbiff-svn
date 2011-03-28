@@ -48,15 +48,6 @@ SSLClient::SSLClient ( QObject* parent ) : SSLCommon ( parent ) {
 	if (SSL_connect(ssl) <=0) {
 		qerror ("Error creating connection BIO");
 	}
-	#if 0
-	int err = postConCheck (ssl, serverName);
-	if (err != X509_V_OK) {
-		fprintf (stderr, "-Error: peer certificate: %s\n",
-			X509_verify_cert_error_string(err)
-		);
-		qerror ("Error checking SSL object after connection");
-	}
-	#endif
 	int ofcmode = fcntl (mSocket,F_GETFL,0);
 	if (fcntl (mSocket,F_SETFL,ofcmode | O_NDELAY)) {
 		qerror ("Couldn't make socket nonblocking");

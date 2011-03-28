@@ -10,7 +10,7 @@ $(CERTS): $(CERTS:.pem=.cnf)
 	ln -sf ../cert-server/root.pem root.pem
 	ln -sf ../cert-server/rootcert.pem rootcert.pem
 	$(OPENSSL) req -newkey rsa:1024 -sha1 -keyout clientkey.pem -out clientreq.pem -config client.cnf -reqexts req_extensions
-	$(OPENSSL) x509 -req -in clientreq.pem -sha1 -extfile client.cnf -extensions certificate_extensions -CA root.pem -CAkey root.pem -CAcreateserial -out clientcert.pem
+	$(OPENSSL) x509 -req -days 3650 -in clientreq.pem -sha1 -extfile client.cnf -extensions certificate_extensions -CA root.pem -CAkey root.pem -CAcreateserial -out clientcert.pem
 	$(CAT) clientcert.pem clientkey.pem rootcert.pem > client.pem
 
 certcleanunused:
