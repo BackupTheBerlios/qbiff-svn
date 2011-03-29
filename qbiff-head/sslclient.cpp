@@ -168,6 +168,7 @@ void SSLClient::connectTCP (void) {
 void SSLClient::setupClientCTX (void) {
 	ctx = SSL_CTX_new(SSLv23_method(  ));
 	SSL_CTX_set_default_passwd_cb (ctx, passwd_cb);
+	OpenSSL_add_all_algorithms();
 	if (SSL_CTX_load_verify_locations(
 		ctx, CAFILE.toLatin1().data(), CADIR) != 1
 	) {
