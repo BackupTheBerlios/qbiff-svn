@@ -162,7 +162,11 @@ int main(int argc,char*argv[]) {
 	//=======================================
 	// certification stuff
 	//---------------------------------------
-	CAFILE         = baseDir + "/cert-server/rootcert.pem";
+	if (useGUI) {
+		CAFILE = baseDir + "/cert-client/rootcert.pem";
+	} else {
+		CAFILE = baseDir + "/cert-server/rootcert.pem";
+	}
 	DH1024         = baseDir + "/cert-server/dh1024.pem";
 	DH512          = baseDir + "/cert-server/dh512.pem";
 	SERVER_CERTFILE= baseDir + "/cert-server/server.pem";

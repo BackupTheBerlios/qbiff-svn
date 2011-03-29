@@ -7,7 +7,7 @@
 #
 #
 Name: qbiff
-BuildRequires:  fdupes cmake
+BuildRequires:  fdupes cmake openssl
 BuildRequires:  libqt4 libqt4-devel libqt4-x11
 BuildRequires:  openssl-devel
 BuildRequires:  libkde4-devel
@@ -91,6 +91,9 @@ install -m 755 init.d/qbiffd        $RPM_BUILD_ROOT/etc/init.d
 rm -f %{buildroot}%{_sbindir}/rcqbiffd
 %{__ln_s} ../../etc/init.d/qbiffd %{buildroot}%{_sbindir}/rcqbiffd
 %{__install} -D -m 0644 %{S:1} %{buildroot}/var/adm/fillup-templates/sysconfig.qbiffd
+
+(cd cert-server && make)
+(cd cert-client && make)
 
 install -m 644 cert-server/rootcert.pem \
 	$RPM_BUILD_ROOT/usr/share/qbiff/cert-server
