@@ -72,7 +72,6 @@ class ServerHandler : public QObject {
 	void clientInit (void);
 
 	public:
-	void cleanup (void);
 	void poll (void);
 };
 

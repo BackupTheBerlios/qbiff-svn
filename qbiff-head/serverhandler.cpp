@@ -148,12 +148,3 @@ void ServerHandler::poll (void) {
 		mFolderList.append (folder);
 	}
 }
-
-//=========================================
-// cleanup
-//-----------------------------------------
-void ServerHandler::cleanup (void) {
-	if (mServer) {
-		mServer -> SSLFree();
-	}
-}

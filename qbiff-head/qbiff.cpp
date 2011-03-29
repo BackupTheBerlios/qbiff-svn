@@ -273,7 +273,6 @@ void quit (int code,siginfo_t*,void*) {
 	}
 	if (pServer) {
 		printf ("End Server Session\n");
-		pServer->cleanup();
 	}
 	if ( ! useGUI ) {
 		QString runfile;

@@ -32,10 +32,13 @@ fi
 case "$1" in
     start)
 	echo -n "Starting qbiff server"
+	rm -f /var/tmp/qbiff*.pid
 	if [ ! -f $QBIFF_SERVER_PWD ];then
 		echo "linux" > $QBIFF_SERVER_PWD
 	fi
-	export $(dbus-launch)
+	if [ -x /usr/bin/dbus-launch ];then
+		export $(dbus-launch)
+	fi
 	cat $QBIFF_SERVER_PWD | qbiffd -d -p $QBIFF_PORT \
 		-f $QBIFF_FOLDER -s $QBIFF_SERVER &>/dev/null &
 	sleep 1
